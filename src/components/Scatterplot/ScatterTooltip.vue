@@ -1,7 +1,7 @@
 <script>
     import {interpolateCool, timeFormat} from "d3";
     export default {
-        name: "MassShootingTooltip",
+        name: "ScatterTooltip",
         props: {
             data: {
                 type: Object,
@@ -57,7 +57,9 @@
                 return [...this.data.sources.split(";")];
             },
         },
-        methods: {},
+        methods: {
+            
+        },
         watch: {},
         mounted() {},
     };
