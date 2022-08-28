@@ -2,6 +2,10 @@
 
 Interactive recipe scatterplot
 
+```
+npm run dessertperson
+```
+
 ---
 
 ## V1 Proof of Concept
