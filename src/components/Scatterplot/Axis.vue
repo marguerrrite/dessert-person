@@ -1,5 +1,5 @@
 <script>
-    import {extent, min, max, timeFormat} from "d3";
+    import {extent, min, max, timeFormat, format} from "d3";
     import utils from "@/scripts/utils.js";
 
     export default {
@@ -10,14 +10,12 @@
                 type: Object,
                 required: true,
             },
+            dimension: {
+                type: String,
+                default: "x",
+            },
             label: {
                 type: String,
-            },
-            formatTick: {
-                type: Function,
-            },
-            scale: {
-                type: Function,
             },
             numberOfTicks: {
                 type: Number,
@@ -39,8 +37,7 @@
                 type: Number,
             },
             scale: {
-                type: String,
-                default: "x",
+                type: Function,
             },
             minrules: {
                 type: Array,
@@ -51,6 +48,7 @@
         },
         data() {
             return {
+                isLoaded: false,
                 hourLabels: [5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 6, 12],
                 minuteSections: [5, 60, 90, 120, 150, 180, 210, 240, 360, 720],
                 arrowSize: 10,
@@ -73,23 +71,34 @@
             formatYears() {
                 return timeFormat("%Y");
             },
+            formatTick() {
+                if (this.dimension == "x") {
+                    return this.format(",");
+                }
+            },
         },
-        watch: {},
+        watch: {
+            xscales() {
+                if (this.xscales["mins55"]) {
+                    this.isLoaded = true;
+                }
+            },
+        },
+        mounted() {},
     };
 </script>
 
 <template>
     <g
         class="Axis AxisHorizontal"
-        v-if="scale == 'x'"
+        v-if="dimension == 'x' && isLoaded"
         :style="{transform: `translate(0, ${dimensions.boundedHeight}px)`}"
     >
         <g>
             {/* Horiz Arrow Top */}
             <line
-                :x1="`${xRuleDistance * 1.5 + dimensions.boundedWidth}`"
+                :x1="`${dimensions.boundedWidth}`"
                 :x2="`${
-                    xRuleDistance * 1.5 +
                     dimensions.boundedWidth -
                     arrowSize -
                     3
@@ -101,9 +110,8 @@
 
             {/* Horiz Arrow Bottom */}
             <line
-                :x1="`${xRuleDistance * 1.5 + dimensions.boundedWidth}`"
+                :x1="`${dimensions.boundedWidth}`"
                 :x2="`${
-                    xRuleDistance * 1.5 +
                     dimensions.boundedWidth -
                     arrowSize -
                     3
@@ -116,7 +124,7 @@
             <line
                 class="Axis__line"
                 :x1="-xRuleDistance - 1.5"
-                :x2="dimensions.boundedWidth + xRuleDistance * 1.5 - 1"
+                :x2="dimensions.boundedWidth"
             />
         </g>
 
@@ -125,8 +133,8 @@
             {/* Vert Arrow Left */}
             <g :style="{transform: `translate(0, ${yArrowOffset})px`}">
                 <line
-                    :x1="-xRuleDistance + 1"
-                    :x2="-xRuleDistance - arrowSize + 1"
+                    :x1="-xRuleDistance - 2"
+                    :x2="-xRuleDistance * 1.5 - 2"
                     :y1="-dimensions.boundedHeight"
                     :y2="-dimensions.boundedHeight + arrowSize"
                     class="Axis__arrow Axis__line Axis__line--left vert"
@@ -134,8 +142,8 @@
 
                 {/* Vert Arrow Right */}
                 <line
-                    :x1="-xRuleDistance - 1"
-                    :x2="-xRuleDistance + arrowSize - 1"
+                    :x1="-xRuleDistance - 2"
+                    :x2="-xRuleDistance / 2 - 2"
                     :y1="-dimensions.boundedHeight"
                     :y2="-dimensions.boundedHeight + arrowSize"
                     class="Axis__arrow Axis__line Axis__line--right vert"
@@ -144,13 +152,14 @@
             <line
                 class="Axis__line"
                 :y1="-dimensions.boundedHeight + 4"
-                :y2="0"
-                :x1="-11"
-                :x2="-11"
+                :y2="2"
+                :x1="-xRuleDistance - 2"
+                :x2="-xRuleDistance - 2"
             />
         </g>
 
         <line
+            v-if="isLoaded"
             v-for="tick in minrules"
             :key="tick"
             class="Grid__rules"
@@ -176,6 +185,7 @@
         />
 
         <line
+            v-if="isLoaded"
             v-for="tick in minuteSections"
             :key="tick"
             :class="tick == 5 ? `Grid__rules` : `Grid__section-delineator`"
@@ -229,23 +239,116 @@
             </text>
         </g>
 
-        <!-- <g
-            className="Axis__label__wrapper"
-            :style="{transform: `translate(0, ${yRuleDistance / 2 - 4})`}"
+        <g
+            class="Axis__label__wrapper"
+            :style="{transform: `translate(0px, 4px)`}"
         >
             <rect
                 fill="white"
                 :width="125"
-                :height="xRuleDistance"
-                :style="{transform: `translate(1, ${-xRuleDistance / 2 - 4})`}"
+                :height="xRuleDistance + 10"
+                :style="{
+                    transform: `translate(0px, -15px)`,
+                }"
             />
             <text
-                :style="{transform: `translate(${yRuleDistance / 3}, 0)`}"
-                className="Axis__label"
+                :style="{
+                    transform: `translate(5px, 0px)`,
+                }"
+                class="Axis__label"
             >
                 {{ label }}
             </text>
-        </g> -->
+        </g>
+    </g>
+    <g v-if="dimension == 'y' && isLoaded" class="Axis AxisVertical">
+        {/* Horizontal lines */}
+
+        <line
+            v-for="tick in levelRules"
+            :key="tick"
+            class="Grid__rules"
+            :x1="0"
+            :x2="dimensions.boundedWidth"
+            :y1="scale(tick)"
+            :y2="scale(tick)"
+        />
+
+        <rect
+            v-for="(tick, i) in ticks"
+            :key="i"
+            class="Grid__stripe"
+            :width="dimensions.boundedWidth"
+            :height="scale(ticks[1]) - scale(ticks[0])"
+            :y="scale(tick)"
+        />
+
+        <template v-for="tick in ticks" :key="tick">
+            <line
+                v-if="tick != 1 && tick != 6"
+                class="Grid__section-delineator"
+                :x1="-45"
+                :x2="dimensions.boundedWidth"
+                :y1="scale(tick)"
+                :y2="scale(tick)"
+            />
+        </template>
+
+        <!-- {/* Left Y Numbers */}
+            {ticks.map((tick, i) => (
+                <text // distance until the next tick div by 2
+                    key={i}
+                    className="Axis__tick Axis__tick--difficulty"
+                    transform={`translate(
+                            ${-xRuleDistance * 2.25 - 3},
+                            ${scale(tick) +
+                                3 -
+                                (scale(ticks[0]) - scale(ticks[1])) / 2})
+                    `}
+                >
+                    {formatTick(tick)}
+                </text>
+            ))}
+            {/* Right Y Numbers */}
+            {ticks.map((tick, i) => (
+                <text // distance until the next tick div by 2
+                    key={i}
+                    className="Axis__tick Axis__tick--difficulty"
+                    transform={`translate(
+                            ${dimensions.boundedWidth + xRuleDistance},
+                            ${scale(tick) +
+                                3 -
+                                (scale(ticks[0]) - scale(ticks[1])) / 2})
+                    `}
+                >
+                    {formatTick(tick)}
+                </text>
+            ))} -->
+
+        {/* "Difficulty" label */}
+        <g
+            class="Axis__label__wrapper"
+            :style="{
+                transform: `translate(${-xscales.mins55(minrules[1])}px, ${
+                    dimensions.boundedHeight + yRuleDistance
+                }px) rotate(-90deg)`,
+            }"
+        >
+            <rect
+                fill="white"
+                :width="92"
+                :height="xRuleDistance"
+                :style="{
+                    transform: `translate(1px, ${-xRuleDistance / 2 - 4}px)`,
+                }"
+            />
+            <text
+             :style="{transform: `translate(7px, 0px)`}"
+                class="Axis__label"
+            >
+                {{ label }}
+            </text>
+        </g>
     </g>
 </template>
 

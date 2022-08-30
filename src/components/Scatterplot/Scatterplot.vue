@@ -154,6 +154,7 @@
             },
             processData(data) {
                 this.data = data;
+                this.setDimensions();
             },
             setDimensions() {
                 let box = this.$refs.container?.getBoundingClientRect();
@@ -212,8 +213,8 @@
                 this.xScales = xScales;
 
                 this.xRuleDistance = Math.abs(
-                    this.xScale55mins(this.minVertRules[1]) -
-                        this.xScale55mins(this.minVertRules[2])
+                    this.xScales['mins55'](this.minVertRules[1]) -
+                       this.xScales['mins55'](this.minVertRules[2])
                 );
 
                 this.yArrowOffset = this.xRuleDistance * 3;
@@ -298,15 +299,6 @@
                 return dots;
             },
         },
-        watch: {
-            data: {
-                handler() {
-                    if (this.data[0].date) {
-                        this.setDimensions();
-                    }
-                },
-            },
-        },
         async mounted() {
             await this.loadData();
             this.resizeObserver = new ResizeObserver(
@@ -364,6 +356,20 @@
                     :xscales="xScales"
                     :number-of-ticks="10"
                     label="total minutes"
+                    :level-rules="levelRules"
+                    :x-rule-distance="xRuleDistance"
+                    :y-rule-distance="yRuleDistance"
+                    :y-ryle-distanceThrees="yRyleDistanceThrees"
+                />
+                <Axis
+                    dimension="y"
+                    :scale="yScale"
+                    :dimensions="dimensions"
+                    :y-scale="yScale"
+                    :minrules="minVertRules"
+                    :xscales="xScales"
+                    :number-of-ticks="5"
+                    label="difficulty"
                     :level-rules="levelRules"
                     :x-rule-distance="xRuleDistance"
                     :y-rule-distance="yRuleDistance"
@@ -615,11 +621,12 @@
             fill: rgba($dp-taupe, 0.2);
             fill: $dp-stripe;
 
-            &:nth-of-type(even) {
+            &:nth-of-type(odd) {
                 display: none;
             }
 
-            &:first-of-type {
+            &:first-of-type,
+            &:last-of-type {
                 display: none;
             }
         }
