@@ -291,36 +291,41 @@
             />
         </template>
 
-        <!-- {/* Left Y Numbers */}
-            {ticks.map((tick, i) => (
-                <text // distance until the next tick div by 2
-                    key={i}
-                    className="Axis__tick Axis__tick--difficulty"
-                    transform={`translate(
-                            ${-xRuleDistance * 2.25 - 3},
-                            ${scale(tick) +
+        <text
+            v-for="(tick, i) in ticks"
+            :key="i"
+            class="Axis__tick Axis__tick--difficulty"
+            :style="{
+                transform: `translate(
+                            ${-xRuleDistance * 2.25 - 3}px,
+                            ${
+                                scale(tick) +
                                 3 -
-                                (scale(ticks[0]) - scale(ticks[1])) / 2})
-                    `}
-                >
-                    {formatTick(tick)}
-                </text>
-            ))}
-            {/* Right Y Numbers */}
-            {ticks.map((tick, i) => (
-                <text // distance until the next tick div by 2
-                    key={i}
-                    className="Axis__tick Axis__tick--difficulty"
-                    transform={`translate(
-                            ${dimensions.boundedWidth + xRuleDistance},
-                            ${scale(tick) +
+                                (scale(ticks[0]) - scale(ticks[1])) / 2
+                            }px)
+                    `,
+            }"
+        >
+            {{ tick}}
+        </text>
+
+        <text
+            v-for="(tick, i) in ticks"
+            :key="i"
+            class="Axis__tick Axis__tick--difficulty"
+            :style="{
+                transform: `translate(
+                            ${dimensions.boundedWidth + xRuleDistance}px,
+                            ${
+                                scale(tick) +
                                 3 -
-                                (scale(ticks[0]) - scale(ticks[1])) / 2})
-                    `}
-                >
-                    {formatTick(tick)}
-                </text>
-            ))} -->
+                                (scale(ticks[0]) - scale(ticks[1])) / 2
+                            }px)
+                    `,
+            }"
+        >
+            {{ tick }}
+        </text>
 
         {/* "Difficulty" label */}
         <g

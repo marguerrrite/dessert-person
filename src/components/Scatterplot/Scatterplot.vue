@@ -73,7 +73,7 @@
                     marginTop: 0,
                     marginRight: 10,
                     marginBottom: 50,
-                    marginLeft: 60,
+                    marginLeft: 80,
                     boundedWidth: 0,
                     boundedHeight: 0,
                     sectionWidth: 0,
