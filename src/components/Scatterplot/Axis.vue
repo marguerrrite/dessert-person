@@ -98,11 +98,7 @@
             {/* Horiz Arrow Top */}
             <line
                 :x1="`${dimensions.boundedWidth}`"
-                :x2="`${
-                    dimensions.boundedWidth -
-                    arrowSize -
-                    3
-                }`"
+                :x2="`${dimensions.boundedWidth - arrowSize - 3}`"
                 :y1="2"
                 :y2="-arrowSize - 2"
                 class="Axis__arrow Axis__line Axis__line--left horiz"
@@ -111,11 +107,7 @@
             {/* Horiz Arrow Bottom */}
             <line
                 :x1="`${dimensions.boundedWidth}`"
-                :x2="`${
-                    dimensions.boundedWidth -
-                    arrowSize -
-                    3
-                }`"
+                :x2="`${dimensions.boundedWidth - arrowSize - 3}`"
                 :y1="-2"
                 :y2="arrowSize + 1"
                 class="Axis__arrow Axis__line Axis__line--right horiz"
@@ -135,8 +127,10 @@
                 <line
                     :x1="-xRuleDistance - 2"
                     :x2="-xRuleDistance * 1.5 - 2"
-                    :y1="-dimensions.boundedHeight"
-                    :y2="-dimensions.boundedHeight + arrowSize"
+                    :y1="-dimensions.boundedHeight - yArrowOffset"
+                    :y2="
+                        -dimensions.boundedHeight + arrowSize - yArrowOffset + 2
+                    "
                     class="Axis__arrow Axis__line Axis__line--left vert"
                 />
 
@@ -144,14 +138,16 @@
                 <line
                     :x1="-xRuleDistance - 2"
                     :x2="-xRuleDistance / 2 - 2"
-                    :y1="-dimensions.boundedHeight"
-                    :y2="-dimensions.boundedHeight + arrowSize"
+                    :y1="-dimensions.boundedHeight - yArrowOffset"
+                    :y2="
+                        -dimensions.boundedHeight + arrowSize - yArrowOffset + 2
+                    "
                     class="Axis__arrow Axis__line Axis__line--right vert"
                 />
             </g>
             <line
                 class="Axis__line"
-                :y1="-dimensions.boundedHeight + 4"
+                :y1="-dimensions.boundedHeight - yArrowOffset - 2"
                 :y2="2"
                 :x1="-xRuleDistance - 2"
                 :x2="-xRuleDistance - 2"
@@ -268,7 +264,7 @@
             v-for="tick in levelRules"
             :key="tick"
             class="Grid__rules"
-            :x1="0"
+            :x1="-xRuleDistance"
             :x2="dimensions.boundedWidth"
             :y1="scale(tick)"
             :y2="scale(tick)"
@@ -278,16 +274,17 @@
             v-for="(tick, i) in ticks"
             :key="i"
             class="Grid__stripe"
-            :width="dimensions.boundedWidth"
+            :width="dimensions.boundedWidth + xRuleDistance"
             :height="scale(ticks[1]) - scale(ticks[0])"
             :y="scale(tick)"
+            :x="-xRuleDistance"
         />
 
         <template v-for="tick in ticks" :key="tick">
             <line
                 v-if="tick != 1 && tick != 6"
                 class="Grid__section-delineator"
-                :x1="-45"
+                :x1="-xRuleDistance - dimensions.marginLeft"
                 :x2="dimensions.boundedWidth"
                 :y1="scale(tick)"
                 :y2="scale(tick)"
@@ -343,7 +340,7 @@
                 }"
             />
             <text
-             :style="{transform: `translate(7px, 0px)`}"
+                :style="{transform: `translate(7px, 0px)`}"
                 class="Axis__label"
             >
                 {{ label }}
