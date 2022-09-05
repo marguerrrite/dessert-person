@@ -12,10 +12,11 @@
     import {Delaunay} from "d3-delaunay";
     import Axis from "./Axis.vue";
     import Circles from "./Circles.vue";
+    import MouseOvers from "./MouseOvers.vue";
 
     export default {
         name: "Scatterplot",
-        components: [Axis, Circles],
+        components: [Axis, Circles, MouseOvers],
         props: {
             yAccessor: {
                 type: Function,
@@ -33,48 +34,39 @@
         data() {
             return {
                 isLoaded: false,
-
                 localDataUrl: "./data/dessert-person-recipes.csv",
-
                 data: [],
                 dataDots: [],
                 voronoiData: [],
                 voronoiPaths: [],
                 filteredDots: [],
-
                 isMouseMove: false,
                 currentHoveredCol: "",
                 currentHoveredIndex: "",
                 currentHoveredData: {},
                 currentHoveredCoords: {x: 0, y: 0},
-
                 currentLockedIndex: "",
                 currentLockedCoords: {x: 0, y: 0},
-
+                currentLockedData: {},
                 minuteSections: [
                     5, 60, 90, 120, 150, 180, 210, 240, 360, 720, 1080,
                 ],
-
                 mainLevels: [1, 2, 3, 4, 5],
-
                 xRuleDistance: 0,
-
                 yRuleDistance: 0,
                 yRyleDistanceThrees: 0,
                 yArrowOffset: 0,
-
                 colsPerSection: {
                     mins55: 1,
                     mins30: 6,
                     mins120: 1,
                     mins360: 2,
                 },
-
                 dimensions: {
-                    marginTop: 0,
-                    marginRight: 10,
-                    marginBottom: 50,
-                    marginLeft: 80,
+                    marginTop: 5,
+                    marginRight: 40,
+                    marginBottom: 90,
+                    marginLeft: 90,
                     boundedWidth: 0,
                     boundedHeight: 0,
                     sectionWidth: 0,
@@ -82,9 +74,7 @@
                     width: 0,
                     axisOffset: 35,
                 },
-
                 yScale: scaleLinear(),
-
                 xScales: {},
                 xScale55mins: scaleLinear(),
                 xScale30mins: scaleLinear(),
@@ -98,27 +88,22 @@
             },
             minVertRules() {
                 let verticalRuleMinutes = [];
-
                 this.minuteSections.forEach((min, i) => {
                     let interval = (this.minuteSections[i + 1] - min) / 5 || 72;
                     // calc the minutes for each vertical rule (as the sections have varying timespans)
-
                     for (i = 0; i <= 5; i++) {
                         let totalMin = min + i * interval;
                         if (totalMin < 1080) verticalRuleMinutes.push(totalMin);
                     }
                 });
-
                 return verticalRuleMinutes;
             },
             levelRules() {
                 let horizIntervals = [];
-
                 this.mainLevels.forEach((level, i) => {
                     let defaultInterval = 1 / 7;
                     let levelThreeInterval = 1 / 8;
                     // calc the minutes for each vertical rule (as the sections have varying timespans)
-
                     for (i = 0; i <= 7; i++) {
                         if (level != 3) {
                             horizIntervals.push(level + i * defaultInterval);
@@ -127,12 +112,10 @@
                         }
                     }
                 });
-
                 horizIntervals = horizIntervals.filter(
                     interval => interval < this.yMax
                 );
                 horizIntervals = [...new Set(horizIntervals)];
-
                 if (horizIntervals[0] == 1) {
                     horizIntervals.splice(0, 1);
                 }
@@ -143,7 +126,7 @@
             async loadData() {
                 this.$papa.parse(this.localDataUrl, {
                     download: true,
-                    header: true, // gives us a data object with the headers as key names
+                    header: true,
                     error: (err, file, inputElem, reason) => {
                         console.log(reason);
                     },
@@ -168,25 +151,21 @@
                     box.width -
                     this.dimensions.marginLeft -
                     this.dimensions.marginRight;
-
                 this.dimensions.sectionWidth =
                     this.dimensions.boundedWidth /
                     Object.values(this.colsPerSection).reduce(
                         (a, b) => a + b,
                         0
                     );
-
                 this.setScales();
             },
             setScales() {
                 if (!this.data[0]) {
                     return;
                 }
-
                 this.yScale = scaleLinear()
                     .domain([1, this.yMax])
                     .range([0, this.dimensions.boundedHeight]);
-
                 this.yRuleDistance =
                     this.yScale(this.levelRules[1]) -
                     this.yScale(this.levelRules[2]);
@@ -194,7 +173,6 @@
                     this.yScale(this.levelRules[16]) -
                         this.yScale(this.levelRules[17])
                 );
-
                 let xScales = {};
                 let xDomains = [
                     [5, 60],
@@ -202,7 +180,6 @@
                     [240, 360],
                     [360, 1080],
                 ];
-
                 Object.keys(this.colsPerSection).forEach((mins, i) => {
                     xScales[mins] = scaleLinear()
                         .domain(xDomains[i])
@@ -212,16 +189,12 @@
                                 this.colsPerSection[mins],
                         ]);
                 });
-
                 this.xScales = xScales;
-
                 this.xRuleDistance = Math.abs(
                     this.xScales["mins55"](this.minVertRules[1]) -
                         this.xScales["mins55"](this.minVertRules[2])
                 );
-
                 this.yArrowOffset = this.xRuleDistance * 3;
-
                 this.dataDots = this.calculateDotCoords(this.data);
                 this.setVoronoiData(this.dataDots);
             },
@@ -247,11 +220,9 @@
             },
             getXScale(val) {
                 let scale;
-
                 // # Invert Formula
                 // scale.invert - (sectionWidth * [sections before scale])
                 // maybe make something that getsScale AND shifts sections? ToDo
-
                 if (this.currentHoveredCol == 1) {
                     scale = this.xScales.mins55;
                 } else if (this.currentHoveredCol <= 7) {
@@ -261,7 +232,6 @@
                 } else {
                     scale = this.xScale360mins;
                 }
-
                 return scale;
             },
             xAccessorScaled(d) {
@@ -281,7 +251,6 @@
             },
             calculateDotCoords(data) {
                 let dots = [];
-
                 data.forEach(row => {
                     let obj = {
                         x: this.xAccessorScaled(row),
@@ -289,7 +258,6 @@
                     };
                     dots.push(obj);
                 });
-
                 return dots;
             },
             onHover($event) {
@@ -300,26 +268,20 @@
                 let y =
                     $event.clientY -
                     $event.currentTarget.getBoundingClientRect().y;
-
                 let totalCols = Object.values(this.colsPerSection).reduce(
                     function (a, b) {
                         return a + b;
                     }
                 );
-
                 let currentCol = Math.ceil(
                     x / (this.dimensions.boundedWidth / totalCols)
                 );
                 this.currentHoveredCol = currentCol;
-
                 let correctXScale = this.getXScale(x);
-
                 let closestIndex = this.voronoiData.voronoi.delaunay.find(x, y);
                 let closestDataPoint = this.data[closestIndex];
-
                 let hoveredData = closestDataPoint;
                 let hoveredCoords = this.dataDots[closestIndex];
-
                 this.currentHoveredIndex = closestIndex;
                 this.currentHoveredData = hoveredData;
                 this.currentHoveredCoords = hoveredCoords;
@@ -330,7 +292,21 @@
                 this.currentHoveredData = {};
                 this.currentHoveredCoords = {x: 0, y: 0};
             },
-            setLockedCoords($event) {},
+            setLockedCoords($event) {
+                if (
+                    !this.currentLockedIndex ||
+                    this.currentLockedIndex != this.currentHoveredIndex
+                ) {
+                    this.currentLockedCoords = {...this.currentHoveredCoords};
+                    this.currentLockedIndex = this.currentHoveredIndex;
+                    this.curentLockedData = {...this.currentHoveredData};
+                    console.log(this.currentHoveredData);
+                } else {
+                    this.currentLocedCoords = {x: 0, y: 0};
+                    this.currentLockedIndex = "";
+                    this.currentLockedData = {};
+                }
+            },
         },
         watch: {
             dataDots() {
@@ -346,10 +322,10 @@
             );
             this.resizeObserver.observe(this.$el);
         },
-
         beforeUnmount() {
             this.resizeObserver.disconnect();
         },
+        components: {MouseOvers},
     };
 </script>
 
@@ -415,41 +391,21 @@
                     />
                 </g> -->
 
-                <g
-                    :style="{
-                        opacity: !isLoaded ? 0 : 1,
-                        transition: '500ms ease-in-out all 200ms',
+                <MouseOvers
+                    :hovered-data="{
+                        currentHoveredCoords,
+                        currentHoveredData,
+                        currentHoveredIndex,
                     }"
-                    v-if="currentHoveredCoords.x"
-                >
-                    <rect
-                        class="
-                            ScatterPlot__hovered-line
-                            ScatterPlot__hovered-line--vertical
-                        "
-                        width="1"
-                        :height="dimensions.boundedHeight"
-                        :x="currentHoveredCoords.x"
-                        :style="{opacity: isMouseMove ? 1 : 0}"
-                    />
-                    <rect
-                        class="
-                            ScatterPlot__hovered-line
-                            ScatterPlot__hovered-line--horizontal
-                        "
-                        :width="dimensions.boundedWidth + xRuleDistance"
-                        height="1"
-                        :x="-xRuleDistance"
-                        :y="currentHoveredCoords.y"
-                        :style="{opacity: isMouseMove ? 1 : 0}"
-                    />
-                    <circle
-                        class="ScatterPlot__hovered-circle"
-                        :cx="currentHoveredCoords.x"
-                        :cy="currentHoveredCoords.y"
-                        r="5"
-                    />
-                </g>
+                    :locked-data="{
+                        currentLockedCoords,
+                        currentLockedData,
+                        currentLockedIndex,
+                    }"
+                    :dimensions="dimensions"
+                    :x-rule-distance="xRuleDistance"
+                />
+
                 <rect
                     class="listener"
                     :height="dimensions.boundedHeight"
@@ -545,7 +501,9 @@
         max-height: 600px;
         width: 100%;
         //background: #383735;
-        background: var(--red-orange-400);
+        background: white;
+        border: 1em solid white;
+        border-radius: 60px;
 
         --royal-blue-700: #155da1;
         --forest-green-700: #25442e;
@@ -556,8 +514,6 @@
 
         --prior-signs-circles: var(--red-orange-800);
         --circles: rgba(black, 0.5);
-
-        border: 1px solid;
 
         .listener {
             //fill: transparent;

@@ -15,7 +15,7 @@
 <template>
     <div class="layout" id="layout">
         <div class="flex-content">
-            <Nav />
+            <!-- <Nav /> -->
             <slot />
         </div>
         <Footer />

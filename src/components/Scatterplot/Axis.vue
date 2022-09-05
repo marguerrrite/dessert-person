@@ -306,7 +306,7 @@
                     `,
             }"
         >
-            {{ tick}}
+            {{ tick <= 5 ? tick : ''}}
         </text>
 
         <text

@@ -23,7 +23,24 @@
 
 <template>
     <div class="app" theme="light">
-        <div id="tooltip-teleport"></div>
+        <div class="background-container">
+            <img
+                src="/images/background-marble.jpeg"
+                alt="Pink, blue, black, and white colors mixed together forming a marble-like pattern."
+            />
+            <div class="img-attribution">
+                Photo by
+                <a
+                    href="https://unsplash.com/@pawel_czerwinski?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+                    >Pawel Czerwinski</a
+                >
+                on
+                <a
+                    href="https://unsplash.com/s/photos/dark-green-marble?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+                    >Unsplash</a
+                >
+            </div>
+        </div>
         <Layout>
             <router-view :key="$route.path" />
         </Layout>
@@ -36,6 +53,26 @@
         width: 100%;
         height: 100%;
         background-color: var(--background-color);
+
+        .background-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+
+            img {
+                height: 100%;
+            }
+
+            .img-attribution {
+                position: absolute;
+                bottom: 2em;
+                left: 2em;
+                color: white;
+                font-size: 0.7em;
+            }
+        }
 
         &.navless {
             .sidebar {

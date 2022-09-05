@@ -25,20 +25,10 @@ export default {
         <MaxWidth size="m" class="contents">
             <div class="left-col">
                 <Link to="/" no-decoration class="github-link" alt="dessert-person">
-                    <StarterTitle />
+                    Dessert Person
                 </Link>
             </div>
             <div class="right-col">
-                <div class="toggle">
-                    <Button @click="toggleChartStyle('styled')" :class="{ inactive: chartStyle != 'styled' }"
-                        class="toggle-button">
-                        <div class="content">Styled <span>Charts</span></div>
-                    </Button>
-                    <Button @click="toggleChartStyle('unstyled')" :class="{ inactive: chartStyle != 'unstyled' }"
-                        class="toggle-button">
-                        <div class="content">Unstyled <span>Charts</span></div>
-                    </Button>
-                </div>
             </div>
         </MaxWidth>
     </MaxWidth>
