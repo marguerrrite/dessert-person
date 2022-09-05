@@ -30,7 +30,7 @@
 
 <template>
     <g
-        v-if="hoveredData.currentHoveredIndex || lockedData.currentLockedIndex"
+        v-if="lockedData.lockedIndex"
         :style="{
             transition: '500ms ease-in-out all 200ms',
         }"
@@ -42,7 +42,7 @@
             "
             width="1"
             :height="dimensions.boundedHeight"
-            :x="hoveredData.currentHoveredCoords.x"
+            :x="lockedData.lockedCoords.x"
         />
         <rect
             class="
@@ -51,15 +51,49 @@
             :width="dimensions.boundedWidth + xRuleDistance"
             height="1"
             :x="-xRuleDistance"
-            :y="hoveredData.currentHoveredCoords.y"
+            :y="lockedData.lockedCoords.y"
         />
-        <text :x="hoveredData.currentHoveredCoords.x" :y="hoveredData.currentHoveredCoords.y">
-            {{ lockedData.currentLockedData.Recipes || hoveredData.currentHoveredData.Recipes }}
+        <text :x="lockedData.lockedCoords.x" :y="lockedData.lockedCoords.y">
+            {{ lockedData.lockedData.Recipes }}
         </text>
         <circle
             class="ScatterPlot__hovered-circle"
-            :cx="hoveredData.currentHoveredCoords.x"
-            :cy="hoveredData.currentHoveredCoords.y"
+            :cx="lockedData.lockedCoords.x"
+            :cy="lockedData.lockedCoords.y"
+            r="5"
+        />
+    </g>
+    <g
+        v-if="hoveredData.hoveredIndex"
+        :style="{
+            transition: '500ms ease-in-out all 200ms',
+        }"
+        
+    >
+        <rect
+            class="
+                ScatterPlot__hovered-line ScatterPlot__hovered-line--vertical
+            "
+            width="1"
+            :height="dimensions.boundedHeight"
+            :x="hoveredData.hoveredCoords.x"
+        />
+        <rect
+            class="
+                ScatterPlot__hovered-line ScatterPlot__hovered-line--horizontal
+            "
+            :width="dimensions.boundedWidth + xRuleDistance"
+            height="1"
+            :x="-xRuleDistance"
+            :y="hoveredData.hoveredCoords.y"
+        />
+        <text :x="hoveredData.hoveredCoords.x" :y="hoveredData.hoveredCoords.y">
+            {{ hoveredData.hoveredData.Recipes }}
+        </text>
+        <circle
+            class="ScatterPlot__hovered-circle"
+            :cx="hoveredData.hoveredCoords.x"
+            :cy="hoveredData.hoveredCoords.y"
             r="5"
         />
     </g>

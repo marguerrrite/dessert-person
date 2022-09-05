@@ -42,12 +42,12 @@
                 filteredDots: [],
                 isMouseMove: false,
                 currentHoveredCol: "",
-                currentHoveredIndex: "",
-                currentHoveredData: {},
-                currentHoveredCoords: {x: 0, y: 0},
-                currentLockedIndex: "",
-                currentLockedCoords: {x: 0, y: 0},
-                currentLockedData: {},
+                hoveredIndex: "",
+                hoveredData: {},
+                hoveredCoords: {x: 0, y: 0},
+                lockedIndex: "",
+                lockedCoords: {x: 0, y: 0},
+                lockedData: {},
                 minuteSections: [
                     5, 60, 90, 120, 150, 180, 210, 240, 360, 720, 1080,
                 ],
@@ -282,29 +282,28 @@
                 let closestDataPoint = this.data[closestIndex];
                 let hoveredData = closestDataPoint;
                 let hoveredCoords = this.dataDots[closestIndex];
-                this.currentHoveredIndex = closestIndex;
-                this.currentHoveredData = hoveredData;
-                this.currentHoveredCoords = hoveredCoords;
+                this.hoveredIndex = closestIndex;
+                this.hoveredData = hoveredData;
+                this.hoveredCoords = hoveredCoords;
             },
             onMouseLeave($event) {
                 this.currentHoveredCol = "";
-                this.currentHoveredIndex = "";
-                this.currentHoveredData = {};
-                this.currentHoveredCoords = {x: 0, y: 0};
+                this.hoveredIndex = "";
+                this.hoveredData = {};
+                this.hoveredCoords = {x: 0, y: 0};
             },
             setLockedCoords($event) {
                 if (
-                    !this.currentLockedIndex ||
-                    this.currentLockedIndex != this.currentHoveredIndex
+                    !this.lockedIndex ||
+                    this.lockedIndex != this.hoveredIndex
                 ) {
-                    this.currentLockedCoords = {...this.currentHoveredCoords};
-                    this.currentLockedIndex = this.currentHoveredIndex;
-                    this.curentLockedData = {...this.currentHoveredData};
-                    console.log(this.currentHoveredData);
+                    this.lockedCoords = {...this.hoveredCoords};
+                    this.lockedIndex = this.hoveredIndex;
+                    this.lockedData = {...this.hoveredData};
                 } else {
                     this.currentLocedCoords = {x: 0, y: 0};
-                    this.currentLockedIndex = "";
-                    this.currentLockedData = {};
+                    this.lockedIndex = "";
+                    this.lockedData = {};
                 }
             },
         },
@@ -333,10 +332,10 @@
     <div class="Scatterplot" ref="container">
         <div v-if="!isLoaded">Loading...</div>
         <!-- <Tooltip
-                currentHoveredData={currentHoveredData}
-                currentHoveredCoords={currentHoveredCoords ? [currentHoveredCoords.x, currentHoveredCoords.y] : [dimensions.boundedWidth / 2, dimensions.boundedHeight]}
+                hoveredData={hoveredData}
+                hoveredCoords={hoveredCoords ? [hoveredCoords.x, hoveredCoords.y] : [dimensions.boundedWidth / 2, dimensions.boundedHeight]}
                 dimensions={dimensions}
-                data={currentHoveredData}
+                data={hoveredData}
             /> -->
 
         <svg
@@ -384,8 +383,8 @@
                         v-for="(path, i) in voronoiPaths"
                         :key="path"
                         :d="path.d"
-                        :fillOpacity="currentHoveredIndex == i ? '0.25' : '0'"
-                        :fill="currentHoveredIndex == i ? '#da79ae' : 'none'"
+                        :fillOpacity="hoveredIndex == i ? '0.25' : '0'"
+                        :fill="hoveredIndex == i ? '#da79ae' : 'none'"
                         stroke="#da79ae"
                         :strokeWidth="1"
                     />
@@ -393,14 +392,14 @@
 
                 <MouseOvers
                     :hovered-data="{
-                        currentHoveredCoords,
-                        currentHoveredData,
-                        currentHoveredIndex,
+                        hoveredCoords,
+                        hoveredData,
+                        hoveredIndex,
                     }"
                     :locked-data="{
-                        currentLockedCoords,
-                        currentLockedData,
-                        currentLockedIndex,
+                        lockedCoords,
+                        lockedData,
+                        lockedIndex,
                     }"
                     :dimensions="dimensions"
                     :x-rule-distance="xRuleDistance"
@@ -434,7 +433,7 @@
                                 className="ScatterPlot__hovered-line ScatterPlot__hovered-line--vertical"
                                 width="1"
                                 height={dimensions.boundedHeight}
-                                x={currentHoveredCoords.x}
+                                x={hoveredCoords.x}
                                 style={{ opacity: (isMouseMove ? 1 : 0) }}
                             />
                         </>
@@ -447,29 +446,29 @@
                                 width={dimensions.boundedWidth}
                                 height="1"
                                 x={-xRuleDistance}
-                                y={currentHoveredCoords.y}
+                                y={hoveredCoords.y}
                                 style={{ opacity: (isMouseMove ? 1 : 0) }}
                             />
-                            <Circle className="ScatterPlot__hovered-circle" cx={currentHoveredCoords.x} cy={currentHoveredCoords.y} r={5} />
+                            <Circle className="ScatterPlot__hovered-circle" cx={hoveredCoords.x} cy={hoveredCoords.y} r={5} />
                         </>
                     )}
-                    {currentLockedCoords && (
+                    {lockedCoords && (
                         <>
                             <rect
                                 className="ScatterPlot__locked-line ScatterPlot__locked-line--vertical"
                                 width={dimensions.boundedWidth}
                                 height="1"
                                 x={-xRuleDistance}
-                                y={currentLockedCoords.y}
+                                y={lockedCoords.y}
 
                             />
                             <rect
                                 className="ScatterPlot__locked-line ScatterPlot__locked-line--vertical"
                                 width="1"
                                 height={dimensions.boundedHeight}
-                                x={currentLockedCoords.x}
+                                x={lockedCoords.x}
                             />
-                            <Circle className="ScatterPlot__locked-circle" cx={currentLockedCoords.x} cy={currentLockedCoords.y} r={6} />
+                            <Circle className="ScatterPlot__locked-circle" cx={lockedCoords.x} cy={lockedCoords.y} r={6} />
                         </>
                     )}
 
@@ -480,8 +479,8 @@
                                     <path
                                         style={{ transition: `100ms ease-in-out all` }}
                                         d={path.d}
-                                        fillOpacity={currentHoveredIndex == i ? "0.25" : "0"}
-                                        fill={currentHoveredIndex == i ? "#da79ae" : "none"}
+                                        fillOpacity={hoveredIndex == i ? "0.25" : "0"}
+                                        fill={hoveredIndex == i ? "#da79ae" : "none"}
                                         stroke="#da79ae"
                                         strokeWidth={1} />
                                 </g>
