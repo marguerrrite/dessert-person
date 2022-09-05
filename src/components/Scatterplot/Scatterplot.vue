@@ -11,18 +11,19 @@
     } from "d3";
     import {Delaunay} from "d3-delaunay";
     import Axis from "./Axis.vue";
+    import Circles from "./Circles.vue";
 
     export default {
         name: "Scatterplot",
-        components: [Axis],
+        components: [Axis, Circles],
         props: {
             yAccessor: {
                 type: Function,
-                default: d => parseInt(d.age_of_shooter),
+                default: d => d.Difficulty,
             },
             xAccessor: {
                 type: Function,
-                default: d => new Date(d.date.toString()),
+                default: d => d.Minutes,
             },
             title: {
                 type: String,
@@ -45,10 +46,10 @@
                 currentHoveredCol: "",
                 currentHoveredIndex: "",
                 currentHoveredData: {},
-                currentHoveredCoords: {},
+                currentHoveredCoords: {x: 0, y: 0},
 
                 currentLockedIndex: "",
-                currentLockedCoords: {},
+                currentLockedCoords: {x: 0, y: 0},
 
                 minuteSections: [
                     5, 60, 90, 120, 150, 180, 210, 240, 360, 720, 1080,
@@ -93,7 +94,6 @@
         },
         computed: {
             yMax() {
-                //return max(this.data, this.yAccessor);
                 return 6;
             },
             minVertRules() {
@@ -176,7 +176,6 @@
                         0
                     );
 
-                this.isLoaded = true;
                 this.setScales();
             },
             setScales() {
@@ -207,51 +206,46 @@
                 Object.keys(this.colsPerSection).forEach((mins, i) => {
                     xScales[mins] = scaleLinear()
                         .domain(xDomains[i])
-                        .range([0, this.dimensions.sectionWidth * this.colsPerSection[mins]]);
+                        .range([
+                            0,
+                            this.dimensions.sectionWidth *
+                                this.colsPerSection[mins],
+                        ]);
                 });
 
                 this.xScales = xScales;
 
                 this.xRuleDistance = Math.abs(
-                    this.xScales['mins55'](this.minVertRules[1]) -
-                       this.xScales['mins55'](this.minVertRules[2])
+                    this.xScales["mins55"](this.minVertRules[1]) -
+                        this.xScales["mins55"](this.minVertRules[2])
                 );
 
                 this.yArrowOffset = this.xRuleDistance * 3;
 
-                this.setVoronoiData(this.data);
+                this.dataDots = this.calculateDotCoords(this.data);
+                this.setVoronoiData(this.dataDots);
             },
             setVoronoiData(dots) {
-                // let delaunay = Delaunay.from(
-                //     dots,
-                //     d => d.x,
-                //     d => d.y
-                // );
-                // let filteredDots = dots;
-                // let voronoi = delaunay.voronoi([
-                //     0,
-                //     0,
-                //     this.dimensions.boundedWidth,
-                //     this.dimensions.boundedHeight,
-                // ]);
-                // let voronoiPaths = dots.map((d, i) => ({
-                //     d: voronoi.renderCell(i),
-                //     ...d,
-                // }));
-                // this.voronoiData = {dots, voronoiPaths, voronoi};
+                let delaunay = Delaunay.from(
+                    dots,
+                    d => d.x,
+                    d => d.y
+                );
+                let filteredDots = dots;
+                let voronoi = delaunay.voronoi([
+                    0,
+                    0,
+                    this.dimensions.boundedWidth,
+                    this.dimensions.boundedHeight,
+                ]);
+                let voronoiPaths = dots.map((d, i) => ({
+                    d: voronoi.renderCell(i),
+                    ...d,
+                }));
+                this.voronoiData = {dots, voronoiPaths, voronoi};
+                this.voronoiPaths = voronoiPaths;
             },
             getXScale(val) {
-                let totalCols = Object.values(this.colsPerSection).reduce(
-                    function (a, b) {
-                        return a + b;
-                    }
-                );
-
-                let currentCol = Math.ceil(
-                    val / (this.dimensions.boundedWidth / this.totalCols)
-                );
-                this.currentHoveredCol = currentCol;
-
                 let scale;
 
                 // # Invert Formula
@@ -283,20 +277,66 @@
                       this.dimensions.sectionWidth * 8;
             },
             yAccessorScaled(d) {
-                this.yScale(this.yAccessor(d));
+                return this.yScale(this.yAccessor(d));
             },
             calculateDotCoords(data) {
                 let dots = [];
 
-                data.forEach((row, rowIndex) => {
+                data.forEach(row => {
                     let obj = {
-                        x: this.xAccessorScaled(row, rowIndex),
-                        y: this.yAccessorScaled(row, rowIndex),
+                        x: this.xAccessorScaled(row),
+                        y: this.yAccessorScaled(row),
                     };
                     dots.push(obj);
                 });
 
                 return dots;
+            },
+            onHover($event) {
+                this.isMouseMove = true;
+                let x =
+                    $event.clientX -
+                    $event.currentTarget.getBoundingClientRect().x;
+                let y =
+                    $event.clientY -
+                    $event.currentTarget.getBoundingClientRect().y;
+
+                let totalCols = Object.values(this.colsPerSection).reduce(
+                    function (a, b) {
+                        return a + b;
+                    }
+                );
+
+                let currentCol = Math.ceil(
+                    x / (this.dimensions.boundedWidth / totalCols)
+                );
+                this.currentHoveredCol = currentCol;
+
+                let correctXScale = this.getXScale(x);
+
+                let closestIndex = this.voronoiData.voronoi.delaunay.find(x, y);
+                let closestDataPoint = this.data[closestIndex];
+
+                let hoveredData = closestDataPoint;
+                let hoveredCoords = this.dataDots[closestIndex];
+
+                this.currentHoveredIndex = closestIndex;
+                this.currentHoveredData = hoveredData;
+                this.currentHoveredCoords = hoveredCoords;
+            },
+            onMouseLeave($event) {
+                this.currentHoveredCol = "";
+                this.currentHoveredIndex = "";
+                this.currentHoveredData = {};
+                this.currentHoveredCoords = {x: 0, y: 0};
+            },
+            setLockedCoords($event) {},
+        },
+        watch: {
+            dataDots() {
+                if (this.dataDots[0]) {
+                    this.isLoaded = true;
+                }
             },
         },
         async mounted() {
@@ -315,6 +355,7 @@
 
 <template>
     <div class="Scatterplot" ref="container">
+        <div v-if="!isLoaded">Loading...</div>
         <!-- <Tooltip
                 currentHoveredData={currentHoveredData}
                 currentHoveredCoords={currentHoveredCoords ? [currentHoveredCoords.x, currentHoveredCoords.y] : [dimensions.boundedWidth / 2, dimensions.boundedHeight]}
@@ -326,7 +367,7 @@
             class="chart"
             :width="dimensions.width"
             :height="dimensions.height"
-            v-if="isLoaded"
+            @click="setLockedCoords"
         >
             <g
                 class="x-rules"
@@ -334,20 +375,6 @@
                     transform: `translate(${dimensions.marginLeft}px, ${dimensions.marginTop}px)`,
                 }"
             >
-                <rect
-                    class="listener"
-                    :x="dimensions.marginLeft"
-                    :y="dimensions.marginTop"
-                    :height="dimensions.boundedHeight"
-                    :width="
-                        dimensions.boundedWidth -
-                        dimensions.marginLeft -
-                        dimensions.marginRight
-                    "
-                    @onMouseMove="console.log()"
-                    @onMouseLeave="console.log()"
-                    @onClick="console.log()"
-                />
                 <Axis
                     dimension="x"
                     :dimensions="dimensions"
@@ -375,51 +402,66 @@
                     :y-rule-distance="yRuleDistance"
                     :y-ryle-distanceThrees="yRyleDistanceThrees"
                 />
+                <Circles v-if="isLoaded" :data="dataDots" />
+                <!-- <g v-if="voronoiPaths[0]">
+                    <path
+                        v-for="(path, i) in voronoiPaths"
+                        :key="path"
+                        :d="path.d"
+                        :fillOpacity="currentHoveredIndex == i ? '0.25' : '0'"
+                        :fill="currentHoveredIndex == i ? '#da79ae' : 'none'"
+                        stroke="#da79ae"
+                        :strokeWidth="1"
+                    />
+                </g> -->
+
+                <g
+                    :style="{
+                        opacity: !isLoaded ? 0 : 1,
+                        transition: '500ms ease-in-out all 200ms',
+                    }"
+                    v-if="currentHoveredCoords.x"
+                >
+                    <rect
+                        class="
+                            ScatterPlot__hovered-line
+                            ScatterPlot__hovered-line--vertical
+                        "
+                        width="1"
+                        :height="dimensions.boundedHeight"
+                        :x="currentHoveredCoords.x"
+                        :style="{opacity: isMouseMove ? 1 : 0}"
+                    />
+                    <rect
+                        class="
+                            ScatterPlot__hovered-line
+                            ScatterPlot__hovered-line--horizontal
+                        "
+                        :width="dimensions.boundedWidth + xRuleDistance"
+                        height="1"
+                        :x="-xRuleDistance"
+                        :y="currentHoveredCoords.y"
+                        :style="{opacity: isMouseMove ? 1 : 0}"
+                    />
+                    <circle
+                        class="ScatterPlot__hovered-circle"
+                        :cx="currentHoveredCoords.x"
+                        :cy="currentHoveredCoords.y"
+                        r="5"
+                    />
+                </g>
+                <rect
+                    class="listener"
+                    :height="dimensions.boundedHeight"
+                    :width="dimensions.boundedWidth"
+                    @mousemove="onHover"
+                    @mouseleave="onMouseLeave"
+                    fill="transparent"
+                    v-if="isLoaded"
+                />
             </g>
         </svg>
         <!-- 
-
-                <Axis
-                    dimension="x"
-                    yScale={yScale}
-                    minrules={minVertRules}
-                    xscales={xScales}
-                    numberOfTicks={10}
-                    sectionwidth={sectionWidth}
-                    label={'total minutes'}
-                    levelRules={levelRules}
-                    xRuleDistance={xRuleDistance}
-                    yRuleDistance={yRuleDistance}
-                    yRyleDistanceThrees={yRyleDistanceThrees}
-                />
-                <Axis
-                    dimension="y"
-                    minrules={minVertRules}
-                    xscales={xScales}
-                    scale={yScale}
-                    label={'difficulty'}
-                    numberOfTicks={5}
-                    levelRules={levelRules}
-                    xRuleDistance={xRuleDistance}
-                    yRuleDistance={yRuleDistance}
-                    yRyleDistanceThrees={yRyleDistanceThrees}
-                />
-
-                <Circles
-                    dimensions={dimensions}
-                    data={data}
-                    dots={dataDots}
-                    minrules={minVertRules}
-                    xAccessor={xAccessorScaled}
-                    yAccessor={yAccessorScaled}
-                    parsedQueryParams={parsedQueryParams}
-                    isLoaded={isLoaded}
-                    currentHoveredData={currentHoveredData}
-                    currentLockedData={currentLockedData}
-                    sectionColors={sectionColors}
-                    bookSections={bookSections}
-                />
-
                 <g transform={`
                     translate(${-xRuleDistance * 2.5}, ${yRuleDistance * 1.5})`}>
                     <text
@@ -518,7 +560,7 @@
         border: 1px solid;
 
         .listener {
-            fill: transparent;
+            //fill: transparent;
         }
 
         .chart {
