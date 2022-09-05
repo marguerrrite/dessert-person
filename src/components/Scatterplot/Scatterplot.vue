@@ -20,11 +20,11 @@
         props: {
             yAccessor: {
                 type: Function,
-                default: d => d.Difficulty,
+                default: d => d.difficulty,
             },
             xAccessor: {
                 type: Function,
-                default: d => d.Minutes,
+                default: d => d.minutes,
             },
             title: {
                 type: String,

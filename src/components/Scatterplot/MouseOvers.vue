@@ -54,7 +54,7 @@
             :y="lockedData.lockedCoords.y"
         />
         <text :x="lockedData.lockedCoords.x" :y="lockedData.lockedCoords.y">
-            {{ lockedData.lockedData.Recipes }}
+            {{ lockedData.lockedData.recipe }}
         </text>
         <circle
             class="ScatterPlot__hovered-circle"
@@ -88,7 +88,7 @@
             :y="hoveredData.hoveredCoords.y"
         />
         <text :x="hoveredData.hoveredCoords.x" :y="hoveredData.hoveredCoords.y">
-            {{ hoveredData.hoveredData.Recipes }}
+            {{ hoveredData.hoveredData.recipe }}
         </text>
         <circle
             class="ScatterPlot__hovered-circle"
