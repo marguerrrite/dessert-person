@@ -38,7 +38,7 @@
     >
         <rect
             class="
-                ScatterPlot__hovered-line ScatterPlot__hovered-line--vertical
+                ScatterPlot__locked-line ScatterPlot__locked-line--vertical
             "
             width="1"
             :height="dimensions.boundedHeight"
@@ -46,7 +46,7 @@
         />
         <rect
             class="
-                ScatterPlot__hovered-line ScatterPlot__hovered-line--horizontal
+                ScatterPlot__locked-line ScatterPlot__locked-line--horizontal
             "
             :width="dimensions.boundedWidth + xRuleDistance"
             height="1"
@@ -57,7 +57,7 @@
             {{ lockedData.lockedData.recipe }}
         </text>
         <circle
-            class="ScatterPlot__hovered-circle"
+            class="ScatterPlot__locked-circle"
             :cx="lockedData.lockedCoords.x"
             :cy="lockedData.lockedCoords.y"
             r="5"

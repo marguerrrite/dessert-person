@@ -10,8 +10,6 @@
         data() {
             return {
                 isLoaded: false,
-                
-                
             };
         },
         computed: {
@@ -20,9 +18,7 @@
             }),
         },
 
-        methods: {
-            
-        },
+        methods: {},
         mounted() {
             this.isLoaded = true;
         },
@@ -30,8 +26,14 @@
 </script>
 
 <template>
-    <MaxWidth class="Index" size="m" v-if="isLoaded">
-        <Scatterplot />
+    <MaxWidth class="Index" size="l" v-if="isLoaded">
+        <h1>
+            Dessert Person
+        </h1>
+        <div class="flex">
+            <Scatterplot />
+            <Recipe />
+        </div>
     </MaxWidth>
 </template>
 
@@ -40,11 +42,31 @@
 
     .Index {
         height: 100%;
-        padding-top: 8em;
+        padding-top: 0em;
+        position: relative;
+
+        h1 {
+            font-family: var(--juane);
+            font-weight: 600;
+            font-size: 2.7em;
+            color: white;
+        }
+
+        .flex {
+            display: flex;
+            gap: 2em;
+        }
+
+        img {
+            position: relative;
+        }
+
+        .title {
+            max-width: 400px;
+        }
 
         @media (max-width: 600px) {
             padding-top: 6em;
         }
-
     }
 </style>

@@ -28,6 +28,11 @@
                 src="/images/background-marble.jpeg"
                 alt="Pink, blue, black, and white colors mixed together forming a marble-like pattern."
             />
+            <img
+                class="pink-overlay"
+                src="/images/background-marble-03.jpg"
+                alt="Pink, mauve, and white colors mixed together forming a marble-like pattern."
+            />
             <div class="img-attribution">
                 Photo by
                 <a
@@ -60,9 +65,18 @@
             position: absolute;
             top: 0;
             left: 0;
+            z-index: 0;
 
             img {
                 height: 100%;
+            }
+
+            .pink-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                opacity: 0.5;
+                animation: fadeInOut 100s ease-in-out;
             }
 
             .img-attribution {

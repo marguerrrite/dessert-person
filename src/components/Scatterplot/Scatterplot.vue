@@ -1,5 +1,7 @@
 <script>
+    import {mapState} from "vuex";
     import utils from "@/scripts/utils.js";
+
     import {
         scaleLinear,
         scaleUtc,
@@ -47,7 +49,7 @@
                 hoveredCoords: {x: 0, y: 0},
                 lockedIndex: "",
                 lockedCoords: {x: 0, y: 0},
-                lockedData: {},
+
                 minuteSections: [
                     5, 60, 90, 120, 150, 180, 210, 240, 360, 720, 1080,
                 ],
@@ -63,10 +65,10 @@
                     mins360: 2,
                 },
                 dimensions: {
-                    marginTop: 5,
+                    marginTop: 15,
                     marginRight: 40,
                     marginBottom: 90,
-                    marginLeft: 90,
+                    marginLeft: 70,
                     boundedWidth: 0,
                     boundedHeight: 0,
                     sectionWidth: 0,
@@ -83,6 +85,9 @@
             };
         },
         computed: {
+            ...mapState({
+                lockedData: state => state.lockedData,
+            }),
             yMax() {
                 return 6;
             },
@@ -299,11 +304,11 @@
                 ) {
                     this.lockedCoords = {...this.hoveredCoords};
                     this.lockedIndex = this.hoveredIndex;
-                    this.lockedData = {...this.hoveredData};
+                    this.$store.dispatch("setData", this.hoveredData);
                 } else {
                     this.currentLocedCoords = {x: 0, y: 0};
                     this.lockedIndex = "";
-                    this.lockedData = {};
+                    this.$store.dispatch("setData", {});
                 }
             },
         },
@@ -378,17 +383,17 @@
                     :y-ryle-distanceThrees="yRyleDistanceThrees"
                 />
                 <Circles v-if="isLoaded" :data="dataDots" />
-                <!-- <g v-if="voronoiPaths[0]">
+                <g v-if="voronoiPaths[0]">
                     <path
                         v-for="(path, i) in voronoiPaths"
                         :key="path"
                         :d="path.d"
                         :fillOpacity="hoveredIndex == i ? '0.25' : '0'"
-                        :fill="hoveredIndex == i ? '#da79ae' : 'none'"
+                        :fill="hoveredIndex == i ? '#da79ae' : 'transparent'"
                         stroke="#da79ae"
                         :strokeWidth="1"
                     />
-                </g> -->
+                </g>
 
                 <MouseOvers
                     :hovered-data="{
@@ -416,81 +421,6 @@
                 />
             </g>
         </svg>
-        <!-- 
-                <g transform={`
-                    translate(${-xRuleDistance * 2.5}, ${yRuleDistance * 1.5})`}>
-                    <text
-                        className="ScatterPlot__title">
-                        Dessert Person Recipes
-                    </text>
-                </g>
-
-                <g style={{ opacity: !isLoaded ? 0 : 1, transition: `500ms ease-in-out all 200ms` }}>
-                    {isMouseMove && (
-                        // Vertical rule
-                        <>
-                            <rect
-                                className="ScatterPlot__hovered-line ScatterPlot__hovered-line--vertical"
-                                width="1"
-                                height={dimensions.boundedHeight}
-                                x={hoveredCoords.x}
-                                style={{ opacity: (isMouseMove ? 1 : 0) }}
-                            />
-                        </>
-                    )}
-                    {isMouseMove && (
-                        // Horizontal rule
-                        <>
-                            <rect
-                                className="ScatterPlot__hovered-line ScatterPlot__hovered-line--vertical"
-                                width={dimensions.boundedWidth}
-                                height="1"
-                                x={-xRuleDistance}
-                                y={hoveredCoords.y}
-                                style={{ opacity: (isMouseMove ? 1 : 0) }}
-                            />
-                            <Circle className="ScatterPlot__hovered-circle" cx={hoveredCoords.x} cy={hoveredCoords.y} r={5} />
-                        </>
-                    )}
-                    {lockedCoords && (
-                        <>
-                            <rect
-                                className="ScatterPlot__locked-line ScatterPlot__locked-line--vertical"
-                                width={dimensions.boundedWidth}
-                                height="1"
-                                x={-xRuleDistance}
-                                y={lockedCoords.y}
-
-                            />
-                            <rect
-                                className="ScatterPlot__locked-line ScatterPlot__locked-line--vertical"
-                                width="1"
-                                height={dimensions.boundedHeight}
-                                x={lockedCoords.x}
-                            />
-                            <Circle className="ScatterPlot__locked-circle" cx={lockedCoords.x} cy={lockedCoords.y} r={6} />
-                        </>
-                    )}
-
-                    {parsedQueryParams.extra && parsedQueryParams.extra.includes("voronoi") && (
-                        <>
-                            {voronoiPaths && voronoiPaths.map((path, i) => (
-                                <g key={i}>
-                                    <path
-                                        style={{ transition: `100ms ease-in-out all` }}
-                                        d={path.d}
-                                        fillOpacity={hoveredIndex == i ? "0.25" : "0"}
-                                        fill={hoveredIndex == i ? "#da79ae" : "none"}
-                                        stroke="#da79ae"
-                                        strokeWidth={1} />
-                                </g>
-                            ))}
-                        </>
-                    )}
-                </g>
-            </Chart>
-
- -->
     </div>
 </template>
 
@@ -502,7 +432,7 @@
         //background: #383735;
         background: white;
         border: 1em solid white;
-        border-radius: 60px;
+        border-radius: var(--border-radius);
 
         --royal-blue-700: #155da1;
         --forest-green-700: #25442e;
@@ -516,6 +446,9 @@
 
         .listener {
             //fill: transparent;
+            &:hover {
+                cursor: pointer;
+            }
         }
 
         .chart {
@@ -525,7 +458,7 @@
 
         height: calc(90vh - 6em);
         min-height: 620px;
-        min-width: 1000px;
+        min-width: 300px;
         max-width: 1700px;
         width: calc(100% + 1em);
         //margin-bottom: 2em;

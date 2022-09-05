@@ -5,6 +5,7 @@ const store = createStore({
         return {
             localStorageKey: "dessertperson_",
             mode: "dev",
+            lockedData: {},
         };
     },
 
@@ -12,11 +13,17 @@ const store = createStore({
         setMode(state, mode) {
             state.mode = mode;
         },
+        setData(state, data) {
+            state.lockedData = data;
+        },
     },
 
     actions: {
         setMode({commit}, mode) {
             commit("setMode", mode);
+        },
+        setData({commit}, data) {
+            commit("setData", data);
         },
     },
 });

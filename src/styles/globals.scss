@@ -1,6 +1,3 @@
-// After years of using various css naming conventions,
-// I have settled on `no convention`, just legibility.
-// - Marguerite
 
 html,
 body,
@@ -91,4 +88,8 @@ img {
 .font-vulf {
     font-family: 'Vulf Mono', serif;
     font-weight: 500;
+}
+
+:root {
+    --border-radius: 40px;
 }

@@ -284,7 +284,7 @@
             <line
                 v-if="tick != 1 && tick != 6"
                 class="Grid__section-delineator"
-                :x1="-xRuleDistance - dimensions.marginLeft"
+                :x1="-dimensions.marginLeft"
                 :x2="dimensions.boundedWidth"
                 :y1="scale(tick)"
                 :y2="scale(tick)"
@@ -297,7 +297,7 @@
             class="Axis__tick Axis__tick--difficulty"
             :style="{
                 transform: `translate(
-                            ${-xRuleDistance * 2.25 - 3}px,
+                            ${-xRuleDistance - (dimensions.marginLeft/2) + 5}px,
                             ${
                                 scale(tick) +
                                 3 -
@@ -309,24 +309,7 @@
             {{ tick <= 5 ? tick : ''}}
         </text>
 
-        <text
-            v-for="(tick, i) in ticks"
-            :key="i"
-            class="Axis__tick Axis__tick--difficulty"
-            :style="{
-                transform: `translate(
-                            ${dimensions.boundedWidth + xRuleDistance}px,
-                            ${
-                                scale(tick) +
-                                3 -
-                                (scale(ticks[0]) - scale(ticks[1])) / 2
-                            }px)
-                    `,
-            }"
-        >
-            {{ tick }}
-        </text>
-
+     
         {/* "Difficulty" label */}
         <g
             class="Axis__label__wrapper"
