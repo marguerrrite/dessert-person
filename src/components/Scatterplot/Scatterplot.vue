@@ -45,15 +45,11 @@
                 currentHoveredCol: "",
                 hoveredIndex: "",
 
-
                 hoveredData: {
                     coords: {x: 0, y: 0},
                     data: {},
-                    index: ""
+                    index: "",
                 },
-                
-
-
 
                 hoveredCoords: {x: 0, y: 0},
                 lockedIndex: "",
@@ -74,7 +70,7 @@
                     mins360: 2,
                 },
                 dimensions: {
-                    marginTop: 15,
+                    marginTop: 3,
                     marginRight: 40,
                     marginBottom: 90,
                     marginLeft: 70,
@@ -415,11 +411,15 @@
                 />
             </g>
         </svg>
+        <div class="decoration">
+            <div v-for="tab in [1, 2, 3, 4]" :key="tab" class="corner-tab"></div>
+        </div>
     </div>
 </template>
 
 <style lang="scss">
     .Scatterplot {
+        position: relative;
         height: 100%;
         max-height: 600px;
         width: 100%;
@@ -694,6 +694,50 @@
                     margin-right: 0.5em;
                     transform: translateY(2px);
                 }
+            }
+        }
+
+        .decorators {
+            position: absolute;
+            width: 100%;
+            height: 100;
+            top: 0;
+            left: 0;
+        }
+        
+        .corner-tab {
+            width: 3em;
+            height: 3em;
+            position: absolute;
+            top: -3em;
+            left: -3em;
+            z-index: 10;
+            border-bottom: 1em solid rgb(17, 132, 147);
+            border-bottom: 1em solid pink;
+            border-right: 1em solid transparent;
+            border-top: 1em solid transparent;
+            border-left: 1em solid transparent;
+            transform: rotate(-45deg);
+            opacity: 0.5;
+
+            &:nth-of-type(2) {
+                right: -3em;
+                left: unset;
+                transform: rotate(45deg);
+            }
+
+            &:nth-of-type(3) {
+                right: -3em;
+                left: unset;
+                bottom: -3em;
+                top: unset;
+                transform: rotate(135deg);
+            }
+
+            &:nth-of-type(4) {
+                bottom: -3em;
+                top: unset;
+                transform: rotate(-135deg);
             }
         }
     }

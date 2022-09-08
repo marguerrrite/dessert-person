@@ -52,11 +52,10 @@
         .metas {
             padding: 1em 0;
             color: var(--background-color);
-            font-family: var(--juane);
-            letter-spacing: 0.05em;
-
+            
             h1 {
                 font-family: var(--juane);
+                letter-spacing: 0.05em;
                 font-weight: 600;
                 font-size: 2.7em;
                 color: var(--background-color);
