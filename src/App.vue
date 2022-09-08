@@ -1,5 +1,6 @@
 <script>
     import {Head, useHead} from "@vueuse/head";
+import { onBeforeMount } from "vue";
     import {mapState} from "vuex";
     export default {
         components: {
@@ -9,15 +10,33 @@
         data() {
             return {
                 loading: false,
+                localDataUrl: "./data/dessert-person-recipes.csv",
             };
         },
         computed: {
             ...mapState({
                 mode: state => state.mode,
+                data: state => state.data,
+                recipes: state => state.recipes,
             }),
         },
-        methods: {},
-        mounted() {},
+        methods: {
+            async initData() {
+                this.$papa.parse(this.localDataUrl, {
+                    download: true,
+                    header: true,
+                    error: (err, file, inputElem, reason) => {
+                        console.log(reason);
+                    },
+                    complete: data => {
+                        this.$store.dispatch("setData", data.data);
+                    },
+                });
+            },
+        },
+        async beforeMount() {
+            this.initData();
+        },
     };
 </script>
 
@@ -34,15 +53,10 @@
                 alt="Pink, mauve, and white colors mixed together forming a marble-like pattern."
             />
             <div class="img-attribution">
-                Photo by
+                Photos by
                 <a
                     href="https://unsplash.com/@pawel_czerwinski?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
                     >Pawel Czerwinski</a
-                >
-                on
-                <a
-                    href="https://unsplash.com/s/photos/dark-green-marble?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
-                    >Unsplash</a
                 >
             </div>
         </div>
@@ -76,7 +90,7 @@
                 top: 0;
                 left: 0;
                 opacity: 0.5;
-                animation: fadeInOut 100s ease-in-out;
+                animation: fadeInOut 70s ease-in-out;
             }
 
             .img-attribution {
@@ -85,6 +99,7 @@
                 left: 2em;
                 color: white;
                 font-size: 0.7em;
+                opacity: 0.5;
             }
         }
 

@@ -240,7 +240,7 @@
             :style="{transform: `translate(0px, 4px)`}"
         >
             <rect
-                fill="white"
+                class="label-plate"
                 :width="125"
                 :height="xRuleDistance + 10"
                 :style="{
@@ -320,7 +320,7 @@
             }"
         >
             <rect
-                fill="white"
+                class="label-plate"
                 :width="92"
                 :height="xRuleDistance"
                 :style="{
@@ -339,5 +339,8 @@
 
 <style lang="scss">
     .Axis {
+        .label-plate {
+            fill: var(--background-color);
+        }
     }
 </style>

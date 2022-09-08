@@ -36,8 +36,7 @@
         data() {
             return {
                 isLoaded: false,
-                localDataUrl: "./data/dessert-person-recipes.csv",
-                data: [],
+
                 dataDots: [],
                 voronoiData: [],
                 voronoiPaths: [],
@@ -45,7 +44,17 @@
                 isMouseMove: false,
                 currentHoveredCol: "",
                 hoveredIndex: "",
-                hoveredData: {},
+
+
+                hoveredData: {
+                    coords: {x: 0, y: 0},
+                    data: {},
+                    index: ""
+                },
+                
+
+
+
                 hoveredCoords: {x: 0, y: 0},
                 lockedIndex: "",
                 lockedCoords: {x: 0, y: 0},
@@ -86,6 +95,7 @@
         },
         computed: {
             ...mapState({
+                data: state => state.data,
                 lockedData: state => state.lockedData,
             }),
             yMax() {
@@ -128,22 +138,6 @@
             },
         },
         methods: {
-            async loadData() {
-                this.$papa.parse(this.localDataUrl, {
-                    download: true,
-                    header: true,
-                    error: (err, file, inputElem, reason) => {
-                        console.log(reason);
-                    },
-                    complete: data => {
-                        this.processData(data.data);
-                    },
-                });
-            },
-            processData(data) {
-                this.data = data;
-                this.setDimensions();
-            },
             setDimensions() {
                 let box = this.$refs.container?.getBoundingClientRect();
                 this.dimensions.width = box.width;
@@ -304,11 +298,11 @@
                 ) {
                     this.lockedCoords = {...this.hoveredCoords};
                     this.lockedIndex = this.hoveredIndex;
-                    this.$store.dispatch("setData", this.hoveredData);
+                    this.$store.dispatch("setLockedData", this.hoveredData);
                 } else {
                     this.currentLocedCoords = {x: 0, y: 0};
                     this.lockedIndex = "";
-                    this.$store.dispatch("setData", {});
+                    this.$store.dispatch("setLockedData", {});
                 }
             },
         },
@@ -319,8 +313,8 @@
                 }
             },
         },
-        async mounted() {
-            await this.loadData();
+        mounted() {
+            this.setDimensions();
             this.resizeObserver = new ResizeObserver(
                 utils.animationFrame(this.setDimensions)
             );
@@ -383,7 +377,7 @@
                     :y-ryle-distanceThrees="yRyleDistanceThrees"
                 />
                 <Circles v-if="isLoaded" :data="dataDots" />
-                <g v-if="voronoiPaths[0]">
+                <!-- <g v-if="voronoiPaths[0]">
                     <path
                         v-for="(path, i) in voronoiPaths"
                         :key="path"
@@ -393,7 +387,7 @@
                         stroke="#da79ae"
                         :strokeWidth="1"
                     />
-                </g>
+                </g> -->
 
                 <MouseOvers
                     :hovered-data="{
@@ -430,8 +424,8 @@
         max-height: 600px;
         width: 100%;
         //background: #383735;
-        background: white;
-        border: 1em solid white;
+        background: var(--background-color);
+        border: 1em solid var(--background-color);
         border-radius: var(--border-radius);
 
         --royal-blue-700: #155da1;

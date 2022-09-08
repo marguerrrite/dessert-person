@@ -27,9 +27,13 @@
 
 <template>
     <MaxWidth class="Index" size="l" v-if="isLoaded">
-        <h1>
-            Dessert Person
-        </h1>
+        <div class="metas">
+            <h1>Dessert Person</h1>
+            <div>
+                Cookbook by Clare Saffitz / Book & Infographic designed by Mia
+                Hammond
+            </div>
+        </div>
         <div class="flex">
             <Scatterplot />
             <Recipe />
@@ -42,14 +46,23 @@
 
     .Index {
         height: 100%;
-        padding-top: 0em;
+        padding-top: 2em;
         position: relative;
 
-        h1 {
+        .metas {
+            padding: 1em 0;
+            color: var(--background-color);
             font-family: var(--juane);
-            font-weight: 600;
-            font-size: 2.7em;
-            color: white;
+            letter-spacing: 0.05em;
+
+            h1 {
+                font-family: var(--juane);
+                font-weight: 600;
+                font-size: 2.7em;
+                color: var(--background-color);
+                margin: 0.25em 0;
+
+            }
         }
 
         .flex {

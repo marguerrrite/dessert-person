@@ -31,6 +31,8 @@ let mode = import.meta.env.VITE_STAGE;
 
 let allRoutes = [...routes];
 
+app.use(VuePapaParse);
+
 store.dispatch("setMode", mode);
 
 let router = createRouter({
@@ -41,7 +43,7 @@ let router = createRouter({
 
 const head = createHead();
 
-app.use(VuePapaParse);
+
 
 app.use(store);
 app.use(router);

@@ -83,11 +83,18 @@ button {
 
 img {
     width: 100%;
+    display: block;
 }
 
 .font-vulf {
     font-family: 'Vulf Mono', serif;
     font-weight: 500;
+}
+
+.letter-rotate {
+    transform: rotate(6deg);
+    display: inline-block;
+    letter-spacing: 0.005em;
 }
 
 :root {
