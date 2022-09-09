@@ -14,11 +14,12 @@
     import {Delaunay} from "d3-delaunay";
     import Axis from "./Axis.vue";
     import Circles from "./Circles.vue";
-    import MouseOvers from "./MouseOvers.vue";
+    import CrossHairs from "./CrossHairs.vue";
+    import Tooltip from "./Tooltip.vue";
 
     export default {
         name: "Scatterplot",
-        components: [Axis, Circles, MouseOvers],
+        components: [Axis, Circles, CrossHairs, Tooltip],
         props: {
             yAccessor: {
                 type: Function,
@@ -70,9 +71,9 @@
                     mins360: 2,
                 },
                 dimensions: {
-                    marginTop: 3,
+                    marginTop: 20,
                     marginRight: 40,
-                    marginBottom: 90,
+                    marginBottom: 110,
                     marginLeft: 70,
                     boundedWidth: 0,
                     boundedHeight: 0,
@@ -319,13 +320,14 @@
         beforeUnmount() {
             this.resizeObserver.disconnect();
         },
-        components: {MouseOvers},
+        components: {CrossHairs},
     };
 </script>
 
 <template>
     <div class="Scatterplot" ref="container">
         <div v-if="!isLoaded">Loading...</div>
+        <h2>Recipe Difficulty by Total Time</h2>
         <!-- <Tooltip
                 hoveredData={hoveredData}
                 hoveredCoords={hoveredCoords ? [hoveredCoords.x, hoveredCoords.y] : [dimensions.boundedWidth / 2, dimensions.boundedHeight]}
@@ -385,7 +387,7 @@
                     />
                 </g> -->
 
-                <MouseOvers
+                <CrossHairs
                     :hovered-data="{
                         hoveredCoords,
                         hoveredData,
@@ -411,8 +413,37 @@
                 />
             </g>
         </svg>
+
+        <Tooltip
+            v-if="lockedIndex"
+            locked
+            :data="lockedData"
+            :style="{
+                transform: `translate(${
+                    dimensions.marginLeft + lockedCoords.x
+                }px, ${dimensions.marginTop + lockedCoords.y}px)`,
+            }"
+            :flipped="lockedCoords?.x > (dimensions.boundedWidth * 0.75)"
+            ref="lockedTooltip"
+        />
+        <Tooltip
+            v-if="hoveredIndex"
+            :data="hoveredData"
+            :style="{
+                transform: `translate(${
+                    dimensions.marginLeft + hoveredCoords.x
+                }px, ${dimensions.marginTop + hoveredCoords.y}px)`,
+            }"
+            :flipped="hoveredCoords?.x > (dimensions.boundedWidth * 0.75)"
+            ref="hoveredTooltip"
+        />
+
         <div class="decoration">
-            <div v-for="tab in [1, 2, 3, 4]" :key="tab" class="corner-tab"></div>
+            <div
+                v-for="tab in [1, 2, 3, 4]"
+                :key="tab"
+                class="corner-tab"
+            ></div>
         </div>
     </div>
 </template>
@@ -427,6 +458,19 @@
         background: var(--background-color);
         border: 1em solid var(--background-color);
         border-radius: var(--border-radius);
+
+        h2 {
+            // font-family: var(--juane);
+            font-weight: 500;
+            font-size: 1em;
+            margin: 0;
+
+            span {
+                &._ {
+                    opacity: 0;
+                }
+            }
+        }
 
         --royal-blue-700: #155da1;
         --forest-green-700: #25442e;
@@ -460,6 +504,7 @@
         position: relative;
 
         .Chart__listener {
+            z-index: 200;
             &:hover {
                 cursor: pointer;
             }
@@ -697,14 +742,12 @@
             }
         }
 
-        .decorators {
+        .Tooltip {
             position: absolute;
-            width: 100%;
-            height: 100;
             top: 0;
             left: 0;
         }
-        
+
         .corner-tab {
             width: 3em;
             height: 3em;

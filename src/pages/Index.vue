@@ -46,7 +46,7 @@
 
     .Index {
         height: 100%;
-        padding-top: 2em;
+        padding-top: 0em;
         position: relative;
 
         .metas {

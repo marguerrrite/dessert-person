@@ -55,6 +55,13 @@
                 {{ lockedData.recipe || "" }}
             </h2>
         </div>
+        <div class="decoration">
+            <div
+                v-for="tab in [1, 2, 3, 4]"
+                :key="tab"
+                class="corner-tab"
+            ></div>
+        </div>
     </div>
 </template>
 
@@ -119,6 +126,42 @@
                     sans-serif;
                 font-weight: 600;
                 color: $dp-dark;
+            }
+        }
+
+        .corner-tab {
+            width: 3em;
+            height: 3em;
+            position: absolute;
+            top: -2em;
+            left: -2em;
+            z-index: 10;
+            border-bottom: 1em solid rgb(17, 132, 147);
+            border-bottom: 1em solid pink;
+            border-right: 1em solid transparent;
+            border-top: 1em solid transparent;
+            border-left: 1em solid transparent;
+            transform: rotate(-45deg);
+            opacity: 0.5;
+
+            &:nth-of-type(2) {
+                right: -2em;
+                left: unset;
+                transform: rotate(45deg);
+            }
+
+            &:nth-of-type(3) {
+                right: -2em;
+                left: unset;
+                bottom: -2em;
+                top: unset;
+                transform: rotate(135deg);
+            }
+
+            &:nth-of-type(4) {
+                bottom: -2em;
+                top: unset;
+                transform: rotate(-135deg);
             }
         }
     }
