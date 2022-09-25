@@ -39,6 +39,7 @@
                 isLoaded: false,
 
                 dataDots: [],
+                coordLookup: {},
                 voronoiData: [],
                 voronoiPaths: [],
                 filteredDots: [],
@@ -88,6 +89,8 @@
                 xScale30mins: scaleLinear(),
                 xScale120mins: scaleLinear(),
                 xScale360mins: scaleLinear(),
+
+                doShowVoronoi: false,
             };
         },
         computed: {
@@ -160,7 +163,7 @@
                     return;
                 }
                 this.yScale = scaleLinear()
-                    .domain([1, this.yMax])
+                    .domain([this.yMax, 1])
                     .range([0, this.dimensions.boundedHeight]);
                 this.yRuleDistance =
                     this.yScale(this.levelRules[1]) -
@@ -245,15 +248,22 @@
             yAccessorScaled(d) {
                 return this.yScale(this.yAccessor(d));
             },
+            processTitle(title) {
+                return title.toLowerCase().replaceAll(" ", "_");
+            },
             calculateDotCoords(data) {
                 let dots = [];
+                let coordLookup = {};
                 data.forEach(row => {
                     let obj = {
                         x: this.xAccessorScaled(row),
                         y: this.yAccessorScaled(row),
+                        title: row.recipe,
                     };
                     dots.push(obj);
+                    coordLookup[this.processTitle(row.recipe)] = obj;
                 });
+                this.coordLookup = coordLookup;
                 return dots;
             },
             onHover($event) {
@@ -309,6 +319,28 @@
                     this.isLoaded = true;
                 }
             },
+            lockedData: {
+                deep: true,
+                handler() {
+                    if (!this.lockedData.recipe && this.lockedCoords["x"]) {
+                        // Clear coords when Recipe changes active recipe.
+                        this.lockedCoords = {x: 0, y: 0};
+                        this.lockedIndex = "";
+                    } else if (
+                        this.lockedData.recipe &&
+                        this.lockedCoords["x"] == 0
+                    ) {
+                        this.lockedCoords = {
+                            x: this.coordLookup[
+                                this.processTitle(this.lockedData.recipe)
+                            ].x,
+                            y: this.coordLookup[
+                                this.processTitle(this.lockedData.recipe)
+                            ].y,
+                        };
+                    }
+                },
+            },
         },
         mounted() {
             this.setDimensions();
@@ -327,7 +359,7 @@
 <template>
     <div class="Scatterplot" ref="container">
         <div v-if="!isLoaded">Loading...</div>
-        <h2>Recipe Difficulty by Total Time</h2>
+        <h2>Recipe Matrix</h2>
         <!-- <Tooltip
                 hoveredData={hoveredData}
                 hoveredCoords={hoveredCoords ? [hoveredCoords.x, hoveredCoords.y] : [dimensions.boundedWidth / 2, dimensions.boundedHeight]}
@@ -375,7 +407,7 @@
                     :y-ryle-distanceThrees="yRyleDistanceThrees"
                 />
                 <Circles v-if="isLoaded" :data="dataDots" />
-                <!-- <g v-if="voronoiPaths[0]">
+                <g v-if="doShowVoronoi">
                     <path
                         v-for="(path, i) in voronoiPaths"
                         :key="path"
@@ -385,7 +417,7 @@
                         stroke="#da79ae"
                         :strokeWidth="1"
                     />
-                </g> -->
+                </g>
 
                 <CrossHairs
                     :hovered-data="{
@@ -415,7 +447,7 @@
         </svg>
 
         <Tooltip
-            v-if="lockedIndex"
+            v-if="lockedData.recipe"
             locked
             :data="lockedData"
             :style="{
@@ -423,7 +455,7 @@
                     dimensions.marginLeft + lockedCoords.x
                 }px, ${dimensions.marginTop + lockedCoords.y}px)`,
             }"
-            :flipped="lockedCoords?.x > (dimensions.boundedWidth * 0.75)"
+            :flipped="lockedCoords?.x > dimensions.boundedWidth * 0.75"
             ref="lockedTooltip"
         />
         <Tooltip
@@ -434,7 +466,7 @@
                     dimensions.marginLeft + hoveredCoords.x
                 }px, ${dimensions.marginTop + hoveredCoords.y}px)`,
             }"
-            :flipped="hoveredCoords?.x > (dimensions.boundedWidth * 0.75)"
+            :flipped="hoveredCoords?.x > dimensions.boundedWidth * 0.75"
             ref="hoveredTooltip"
         />
 

@@ -89,8 +89,8 @@ import { onBeforeMount } from "vue";
                 position: absolute;
                 top: 0;
                 left: 0;
-                opacity: 0.5;
-                animation: fadeInOut 70s ease-in-out;
+                opacity: 1;
+                animation: fadeInOut 1s ease-in-out;
             }
 
             .img-attribution {

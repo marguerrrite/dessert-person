@@ -1,24 +1,35 @@
 <script>
-    import {mapState} from "vuex";
-    import {extent, min, max} from "d3";
-    import utils from "@/scripts/utils.js";
+        import {mapState} from "vuex";
+        import {extent, min, max} from "d3";
+        import utils from "@/scripts/utils.js";
+import YouTubeLink from "./YouTubeLink.vue";
 
-    export default {
-        name: "Recipe",
-        components: {},
-        props: {},
-        data() {
-            return {};
-        },
-        computed: {
-            ...mapState({
-                lockedData: state => state.lockedData,
-                recipes: state => state.recipes,
-            }),
-        },
-        methods: {},
-        watch: {},
-    };
+        export default {
+            name: "Recipe",
+            components: { YouTubeLink },
+            props: {},
+            data() {
+                return {
+
+                };
+            },
+            computed: {
+                ...mapState({
+                    lockedData: state => state.lockedData,
+                    recipes: state => state.recipes,
+                }),
+            },
+            methods: {
+                setLockedRecipe(recipe) {
+                    if (recipe) {
+                        this.$store.dispatch("setLockedData", this.recipes[recipe]);
+                    } else {
+                        this.$store.dispatch("setLockedData", {});
+                    }
+                }
+            },
+            watch: {},
+        };
 </script>
 
 <template>
@@ -36,7 +47,7 @@
             </h2>
             <div class="table-container">
                 <div class="table">
-                    <div
+                    <a @click="setLockedRecipe(recipe)"
                         v-for="(recipe, index) in Object.keys(recipes)"
                         class="row"
                     >
@@ -46,14 +57,25 @@
                         <div>
                             {{ recipes[recipe].recipe }}
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
-        <div v-if="lockedData.recipe">
+        <div v-if="lockedData.recipe" class="active-recipe">
+            <div>
+                <Button @click="setLockedRecipe()"> <span class="arrow">&#60;-</span></Button>
+            </div>
             <h2>
                 {{ lockedData.recipe || "" }}
             </h2>
+            <div>Level {{ Math.floor(lockedData.difficulty) }}</div>
+            <div>
+                <div>Recipe time: {{ lockedData.minutes }}</div>
+                <div>Page: {{ lockedData.page }}</div>
+            </div>
+            <div v-if="lockedData.video_src">
+                <YouTubeLink :data="lockedData" :src="lockedData.video_src" :thumbnail="lockedData.video_thumbnail"/>
+            </div>
         </div>
         <div class="decoration">
             <div
@@ -72,7 +94,6 @@
         width: 100%;
         background: var(--background-color);
         border-radius: var(--border-radius);
-        font-family: var(--juane);
         padding: 1em 0;
         color: var(--text-base-color);
 
@@ -82,7 +103,23 @@
             font-size: 1.3em;
         }
 
+        .active-recipe {
+            padding: 0 1em;
+
+            h2 {
+                text-align: center;
+            }
+        }
+
+        .youtube-preview {
+            width: 100%;
+            background: #FFF3F4;
+            color: #97484F;
+        }
+
         .recipe-list-container {
+            font-family: var(--juane);
+
             h2 {
                 text-align: center;
                 text-orientation: sideways;

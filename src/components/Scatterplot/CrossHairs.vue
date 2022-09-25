@@ -44,7 +44,7 @@
 <template>
     <g class="CrossHairs">
         <g
-            v-if="lockedData.lockedIndex"
+            v-if="lockedData.lockedData.recipe"
             :style="{
                 transition: '500ms ease-in-out all 200ms',
             }"
