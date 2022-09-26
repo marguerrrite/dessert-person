@@ -40,9 +40,7 @@ let utils = {
             }, timeout);
         };
     },
-    getXScale(xScales, tick){
 
-    },
 
     filters: {
         getReadingTime: string => utils.getReadingTime(string),

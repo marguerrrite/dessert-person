@@ -38,6 +38,8 @@
             <Scatterplot />
             <Recipe />
         </div>
+        <FilterBar/>
+        <Note/>
     </MaxWidth>
 </template>
 
@@ -52,6 +54,8 @@
         .metas {
             padding: 1em 0;
             color: var(--background-color);
+            position: relative;
+            z-index: 10;
             
             h1 {
                 font-family: var(--juane);
@@ -67,6 +71,8 @@
         .flex {
             display: flex;
             gap: 2em;
+            position: relative;
+            z-index: 10;
         }
 
         img {
@@ -75,6 +81,11 @@
 
         .title {
             max-width: 400px;
+        }
+
+        .FilterBar {
+            position: relative;
+            z-index: 10;
         }
 
         @media (max-width: 600px) {

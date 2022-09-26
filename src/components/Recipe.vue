@@ -1,35 +1,39 @@
 <script>
-        import {mapState} from "vuex";
-        import {extent, min, max} from "d3";
-        import utils from "@/scripts/utils.js";
-import YouTubeLink from "./YouTubeLink.vue";
+    import {mapState} from "vuex";
+    import {extent, min, max} from "d3";
+    import utils from "@/scripts/utils.js";
+    import YouTubeLink from "./YouTubeLink.vue";
 
-        export default {
-            name: "Recipe",
-            components: { YouTubeLink },
-            props: {},
-            data() {
-                return {
-
-                };
-            },
-            computed: {
-                ...mapState({
-                    lockedData: state => state.lockedData,
-                    recipes: state => state.recipes,
-                }),
-            },
-            methods: {
-                setLockedRecipe(recipe) {
-                    if (recipe) {
-                        this.$store.dispatch("setLockedData", this.recipes[recipe]);
-                    } else {
-                        this.$store.dispatch("setLockedData", {});
-                    }
+    export default {
+        name: "Recipe",
+        components: {YouTubeLink},
+        props: {},
+        data() {
+            return {};
+        },
+        computed: {
+            ...mapState({
+                lockedData: state => state.lockedData,
+                recipes: state => state.recipes,
+            }),
+        },
+        methods: {
+            setLockedRecipe(recipe) {
+                if (recipe) {
+                    this.$store.dispatch("setLockedData", this.recipes[recipe]);
+                } else {
+                    this.$store.dispatch("setLockedData", {});
                 }
             },
-            watch: {},
-        };
+            processTitle(title) {
+                return title
+                    .replaceAll("And", "and")
+                    .replaceAll("With", "with");
+            },
+        },
+        filters: {},
+        watch: {},
+    };
 </script>
 
 <template>
@@ -47,7 +51,8 @@ import YouTubeLink from "./YouTubeLink.vue";
             </h2>
             <div class="table-container">
                 <div class="table">
-                    <a @click="setLockedRecipe(recipe)"
+                    <a
+                        @click="setLockedRecipe(recipe)"
                         v-for="(recipe, index) in Object.keys(recipes)"
                         class="row"
                     >
@@ -55,7 +60,7 @@ import YouTubeLink from "./YouTubeLink.vue";
                             {{ index + 1 }}
                         </div>
                         <div>
-                            {{ recipes[recipe].recipe }}
+                            {{ processTitle(recipes[recipe].recipe) }}
                         </div>
                     </a>
                 </div>
@@ -63,10 +68,12 @@ import YouTubeLink from "./YouTubeLink.vue";
         </div>
         <div v-if="lockedData.recipe" class="active-recipe">
             <div>
-                <Button @click="setLockedRecipe()"> <span class="arrow">&#60;-</span></Button>
+                <Button @click="setLockedRecipe()">
+                    <span class="arrow">&#60;-</span></Button
+                >
             </div>
             <h2>
-                {{ lockedData.recipe || "" }}
+                {{ processTitle(lockedData.recipe) || "" }}
             </h2>
             <div>Level {{ Math.floor(lockedData.difficulty) }}</div>
             <div>
@@ -74,7 +81,11 @@ import YouTubeLink from "./YouTubeLink.vue";
                 <div>Page: {{ lockedData.page }}</div>
             </div>
             <div v-if="lockedData.video_src">
-                <YouTubeLink :data="lockedData" :src="lockedData.video_src" :thumbnail="lockedData.video_thumbnail"/>
+                <YouTubeLink
+                    :data="lockedData"
+                    :src="lockedData.video_src"
+                    :thumbnail="lockedData.video_thumbnail"
+                />
             </div>
         </div>
         <div class="decoration">
@@ -94,8 +105,9 @@ import YouTubeLink from "./YouTubeLink.vue";
         width: 100%;
         background: var(--background-color);
         border-radius: var(--border-radius);
-        padding: 1em 0;
+        padding-top: 1em;
         color: var(--text-base-color);
+        overflow: scroll;
 
         h2 {
             font-family: var(--juane);
@@ -113,8 +125,8 @@ import YouTubeLink from "./YouTubeLink.vue";
 
         .youtube-preview {
             width: 100%;
-            background: #FFF3F4;
-            color: #97484F;
+            background: #fff3f4;
+            color: #97484f;
         }
 
         .recipe-list-container {
@@ -129,8 +141,8 @@ import YouTubeLink from "./YouTubeLink.vue";
             }
 
             .table-container {
-                max-height: 560px;
                 overflow-y: scroll;
+                max-height: 550px;
             }
 
             .table {
