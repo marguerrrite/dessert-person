@@ -10,7 +10,11 @@
             return {};
         },
         computed: {},
-        methods: {},
+        methods: {
+            setHasSeenNote() {
+                this.$store.dispatch("setHasSeenNote", true);
+            },
+        },
         watch: {},
     };
 </script>
@@ -18,16 +22,16 @@
 <template>
     <div class="Note__container">
         <div class="Note">
-            <h1>Hello! Quick note <span>:)</span></h1>
+            <h1>Hello! Quick note. <span>😊</span></h1>
             <h2>
                 The <i>Dessert Person</i> cookbook is created by Claire Saffitz
                 and designed by Mia Johnson.
             </h2>
             <h4 class="Note__links">
-                <Link to="https://www.dessertperson.com/" doOpenInNewTab>
+                <Link to="https://www.dessertperson.com/" do-open-in-new-tab>
                     <i>Dessert Person</i> Site &#8594;
                 </Link>
-                <Link to="https://www.miaajohnson.com/" doOpenInNewTab>
+                <Link to="https://www.miaajohnson.com/" do-open-in-new-tab>
                     Mia Johnson Site &#8594;
                 </Link>
             </h4>
@@ -40,7 +44,7 @@
                 the relationships between recipe difficulty and recipe time.
             </h4>
 
-            <Button onClick="{agreeToSeen}" class="Note__button">
+            <Button class="Note__button" @click="setHasSeenNote">
                 Got it!
             </Button>
             <div class="Note__mute">And mute note for 15 days</div>
@@ -49,7 +53,6 @@
 </template>
 
 <style lang="scss">
-
     .Note {
         &__container {
             background: rgba(blue, 0.95);
@@ -137,10 +140,16 @@
             font-size: 1em;
             position: relative;
             margin-top: 2em;
+        }
 
-            .Button {
-                color: blue;
-                width: 100%;
+        .button {
+            width: 100%;
+            padding: 1em 0;
+            align-self: start;
+            max-width: 10em;
+
+            &:hover {
+                background: var(--neon-green-600);
             }
         }
 

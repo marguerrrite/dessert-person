@@ -1,6 +1,6 @@
 <script>
     import {Head, useHead} from "@vueuse/head";
-import { onBeforeMount } from "vue";
+    import {timeDay} from "d3";
     import {mapState} from "vuex";
     export default {
         components: {
@@ -18,6 +18,8 @@ import { onBeforeMount } from "vue";
                 mode: state => state.mode,
                 data: state => state.data,
                 recipes: state => state.recipes,
+                hasSeenNote: state => state.hasSeenNote,
+                localStorageKey: state => state.localStorageKey,
             }),
         },
         methods: {
@@ -33,10 +35,22 @@ import { onBeforeMount } from "vue";
                     },
                 });
             },
+            checkNoteDate() {
+                if (this.hasSeenNote.hasSeenNote) {
+                    let shouldExpire = timeDay.count(new Date(this.hasSeenNote.expire), new Date());
+
+                    if (shouldExpire > 0) {
+                        this.$store.dispatch("setHasSeenNote", false);
+                    }                    
+                }
+            },
         },
         async beforeMount() {
-            this.initData();
+            this.initData();           
         },
+        mounted() {
+            this.checkNoteDate();
+        }
     };
 </script>
 

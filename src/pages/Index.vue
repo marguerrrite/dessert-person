@@ -15,10 +15,15 @@
         computed: {
             ...mapState({
                 //chartStyle: state => state.chartStyle,
+                hasSeenNote: state => state.hasSeenNote,
             }),
         },
 
-        methods: {},
+        methods: {
+            toggleNote() {
+                this.$store.dispatch("setHasSeenNote", false);
+            },
+        },
         mounted() {
             this.isLoaded = true;
         },
@@ -33,13 +38,14 @@
                 Cookbook by Clare Saffitz / Book & Infographic designed by Mia
                 Hammond
             </div>
+            <button @click="toggleNote"> See Note </button>
         </div>
         <div class="flex">
             <Scatterplot />
             <Recipe />
         </div>
-        <FilterBar/>
-        <Note/>
+        <FilterBar />
+        <Note v-if="!hasSeenNote.hasSeenNote" />
     </MaxWidth>
 </template>
 
@@ -56,7 +62,7 @@
             color: var(--background-color);
             position: relative;
             z-index: 10;
-            
+
             h1 {
                 font-family: var(--juane);
                 letter-spacing: 0.05em;
@@ -64,7 +70,6 @@
                 font-size: 2.7em;
                 color: var(--background-color);
                 margin: 0.25em 0;
-
             }
         }
 

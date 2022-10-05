@@ -32,6 +32,10 @@
                 let chapterList = Object.values(this.recipes).map(recipe => recipe["section"]);
                 return (chapterList = [...new Set(chapterList)]);
             },
+            filterOptions() {
+                let options = [...this.chapterList];
+                return options;
+            }
         },
         methods: {},
         watch: {},
@@ -71,7 +75,7 @@
         <div class="FilterBar__content">
             <div class="FilterBar__main" v-if="shouldShowChapters">
                 <button
-                    v-for="(filter, i) in chapterList"
+                    v-for="(filter, i) in filterOptions"
                     :key="i"
                     class="FilterBar__button"
                 >
@@ -86,7 +90,10 @@
             </div>
             <div class="FilterBar__extra">
                 <div class="FilterBar__item" v-if="shouldShowExtra">
+                    <button class="FilterBar__button">YouTube</button>
+                    <button class="FilterBar__button">Recipes I've Made!</button>
                     <button class="FilterBar__button">Voronoi Diagram</button>
+                    
                     <!-- <Tooltip class="FilterBar__tooltip">
                                 <FontAwesomeIcon class="FilterBar__item__icon" icon={faQuestionCircle} />
                                 <div>
@@ -266,6 +273,16 @@
         }
 
         &__main {
+            display: flex;
+            flex-wrap: wrap;
+
+            .FilterBar__button {
+                margin-right: 0.75em;
+                margin-bottom: 0.75em;
+            }
+        }
+
+        &__extra {
             display: flex;
             flex-wrap: wrap;
 
