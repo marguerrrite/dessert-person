@@ -449,6 +449,7 @@
         <Tooltip
             v-if="lockedData.recipe"
             locked
+            :no-pointer-events="!!lockedData"
             :data="lockedData"
             :style="{
                 transform: `translate(${

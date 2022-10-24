@@ -22,7 +22,11 @@
             flipped: {
                 type: Boolean,
                 default: false
-            }
+            },
+            noPointerEvents: {
+                type: Boolean,
+                default: false,
+            },
         },
         data() {
             return {};
@@ -61,6 +65,13 @@
 
 <style lang="scss">
     .Tooltip {
+        pointer-events: none;
+
+        &:hover {
+            pointer-events: none;
+            cursor: pointer;
+        }
+
 
         .tooltip-contents {
             background: var(--background-color);
