@@ -406,7 +406,7 @@
                     :y-rule-distance="yRuleDistance"
                     :y-ryle-distanceThrees="yRyleDistanceThrees"
                 />
-                <Circles v-if="isLoaded" :data="dataDots" />
+                <Circles v-if="isLoaded" :data="dataDots" :dimensions="dimensions"/>
                 <g v-if="doShowVoronoi">
                     <path
                         v-for="(path, i) in voronoiPaths"
