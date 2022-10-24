@@ -1,6 +1,7 @@
 <script>
     import {mapState} from "vuex";
     import Scatterplot from "@/components/Scatterplot/Scatterplot.vue";
+    import {median} from "d3-array";
 
     export default {
         name: "Index",
@@ -10,12 +11,13 @@
         data() {
             return {
                 isLoaded: false,
+                plotHeight: 0,
             };
         },
         computed: {
             ...mapState({
-                //chartStyle: state => state.chartStyle,
                 hasSeenNote: state => state.hasSeenNote,
+                selection: state => state.selection,
             }),
         },
 
@@ -25,6 +27,8 @@
             },
         },
         mounted() {
+            let query = {...this.$route.query};
+            this.$store.commit("setSelection", query);
             this.isLoaded = true;
         },
     };
@@ -38,10 +42,10 @@
                 Cookbook by Clare Saffitz / Book & Infographic designed by Mia
                 Hammond
             </div>
-            <button @click="toggleNote"> See Note </button>
+            <button @click="toggleNote">See Note</button>
         </div>
         <div class="flex">
-            <Scatterplot />
+            <Scatterplot ref="plot" />
             <Recipe />
         </div>
         <FilterBar />
@@ -56,6 +60,8 @@
         height: 100%;
         padding-top: 0em;
         position: relative;
+        background-color: var(--background-color);
+        background: lightpink;
 
         .metas {
             padding: 1em 0;
@@ -78,6 +84,10 @@
             gap: 2em;
             position: relative;
             z-index: 10;
+
+            @media (max-width: 900px) {
+                flex-direction: column;
+            }
         }
 
         img {

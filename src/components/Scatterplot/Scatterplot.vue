@@ -10,6 +10,7 @@
         timeFormat,
         interpolateRdPu,
         interpolateCool,
+        median,
     } from "d3";
     import {Delaunay} from "d3-delaunay";
     import Axis from "./Axis.vue";
@@ -156,6 +157,7 @@
                         (a, b) => a + b,
                         0
                     );
+                this.$store.commit("setDimensions", this.dimensions);
                 this.setScales();
             },
             setScales() {
@@ -406,7 +408,11 @@
                     :y-rule-distance="yRuleDistance"
                     :y-ryle-distanceThrees="yRyleDistanceThrees"
                 />
-                <Circles v-if="isLoaded" :data="dataDots" :dimensions="dimensions"/>
+                <Circles
+                    v-if="isLoaded"
+                    :data="dataDots"
+                    :dimensions="dimensions"
+                />
                 <g v-if="doShowVoronoi">
                     <path
                         v-for="(path, i) in voronoiPaths"
@@ -491,6 +497,10 @@
         background: var(--background-color);
         border: 1em solid var(--background-color);
         border-radius: var(--border-radius);
+
+        @media (max-height: 1600px) {
+            max-height: 900px;
+        }
 
         h2 {
             // font-family: var(--juane);

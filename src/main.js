@@ -17,7 +17,7 @@ for (const path in widgets) {
 }
 
 app.mixin({
-    methods: utils.filters,
+    methods: utils.filters
 });
 
 const layouts = import.meta.globEager("./layouts/**/*.vue");

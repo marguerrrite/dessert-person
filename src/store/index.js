@@ -17,6 +17,10 @@ const store = createStore({
             },
             data: [],
             recipes: {},
+            selection: {
+                recipe: "",
+            },
+            dimensions: {}
         };
     },
 
@@ -24,13 +28,21 @@ const store = createStore({
         setMode(state, mode) {
             state.mode = mode;
         },
+        setDimensions(state, dimnsions) {
+            state.dimensions = dimnsions;
+        },
         setLockedData(state, data) {
             state.lockedData = data;
         },
         setData(state, data) {
             let processed = [...data];
             processed.forEach(row => {
-                row["slug"] = row.recipe.toLowerCase().replaceAll(" ", "-");
+                let slug = row.recipe
+                    .toLowerCase()
+                    .replaceAll(" ", "-")
+                    .replaceAll("'", "");
+                slug = slug.replace(/(?:[^\w-.]+|_+)/g, " ");
+                row["slug"] = slug;
             });
             state.data = processed;
 
@@ -45,7 +57,7 @@ const store = createStore({
             if (!hasSeenNote) {
                 localStorage.removeItem(state.localStorageKey);
                 state.hasSeenNote = {hasSeenNote: false, expire: ""};
-                return
+                return;
             }
 
             let expire = new Date();
@@ -62,6 +74,9 @@ const store = createStore({
                 state.localStorageKey,
                 JSON.stringify(agreedObj)
             );
+        },
+        setSelection(state, newSelection) {
+            state.selection = newSelection;
         },
     },
 

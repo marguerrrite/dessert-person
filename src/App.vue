@@ -56,7 +56,7 @@
 
 <template>
     <div class="app" theme="light">
-        <div class="background-container">
+        <!-- <div class="background-container">
             <img
                 src="/images/background-marble.jpeg"
                 alt="Pink, blue, black, and white colors mixed together forming a marble-like pattern."
@@ -73,7 +73,7 @@
                     >Pawel Czerwinski</a
                 >
             </div>
-        </div>
+        </div> -->
         <Layout>
             <router-view :key="$route.path" />
         </Layout>
@@ -85,7 +85,6 @@
     #app {
         width: 100%;
         height: 100%;
-        background-color: var(--background-color);
 
         .background-container {
             width: 100%;

@@ -1,7 +1,6 @@
 <script>
     import {mapState} from "vuex";
     import {extent, min, max} from "d3";
-    import utils from "@/scripts/utils.js";
     import YouTubeLink from "./YouTubeLink.vue";
 
     export default {
@@ -18,14 +17,18 @@
             ...mapState({
                 lockedData: state => state.lockedData,
                 recipes: state => state.recipes,
+                selection: state => state.selection,
+                dimensions: state => state.dimensions,
             }),
         },
         methods: {
             setLockedRecipe(recipe) {
-                if (recipe) {
+                if (recipe.slug != this.selection.recipe) {
                     this.$store.dispatch("setLockedData", recipe);
+                    this.setSelection({query: {recipe: recipe.slug}});
                 } else {
                     this.$store.dispatch("setLockedData", {});
+                    this.setSelection({query: {recipe: undefined}});
                 }
             },
             processTitle(title) {
@@ -70,6 +73,13 @@
 
                 this.sortedRecipes = sorted;
             },
+            setSelection(newSelection) {
+                let query = {...this.$route}.query;
+                query = {...query, ...newSelection.query};
+                
+                this.$router.push({query});
+                this.$store.commit("setSelection", query);
+            },
         },
         watch: {
             recipes() {
@@ -82,7 +92,7 @@
 
 <template>
     <div class="Recipe">
-        <div v-if="!lockedData.recipe" class="recipe-list-container">
+        <div class="recipe-list-container">
             <h2>
                 <span
                     class="letter-rotate"
@@ -114,57 +124,82 @@
                         Difficulty
                     </div>
                 </div>
-                <div class="table" v-if="sortedRecipes[0]">
-                    <a
-                        @click="setLockedRecipe(recipe)"
-                        v-for="(recipe, index) in sortedRecipes"
-                        class="row"
-                    >
-                        <div class="recipe">
-                            {{ processTitle(recipe.recipe) }}
-                        </div>
-                        <div>
-                            <div class="youtube-icon" v-if="recipe.video_src">
-                                <svg
-                                    width="20"
-                                    height="14"
-                                    viewBox="0 0 20 14"
-                                    fill="none"
-                                >
-                                    <g clip-path="url(#clip0_85_15)">
-                                        <path
-                                            d="M19.5835 2.18627C19.353 1.32526 18.6763 0.648636 17.8153 0.418156C16.2545 0 10 0 10 0C10 0 3.74547 0 2.18637 0.418156C1.32532 0.648636 0.648666 1.32526 0.418176 2.18627C0 3.7453 0 7 0 7C0 7 0 10.2547 0.418176 11.8137C0.648666 12.6747 1.32532 13.3514 2.18637 13.5818C3.74547 14 10 14 10 14C10 14 16.2545 14 17.8136 13.5818C18.6747 13.3514 19.3513 12.6747 19.5818 11.8137C20 10.2547 20 7 20 7C20 7 20 3.7453 19.5835 2.18627Z"
-                                            fill="#FF0000"
-                                        />
-                                        <path
-                                            d="M7.99951 9.99955L13.1971 7.00002L7.99951 4.00049V9.99955Z"
-                                            fill="white"
-                                        />
-                                    </g>
-                                    <defs>
-                                        <clipPath id="clip0_85_15">
-                                            <rect
-                                                width="20"
-                                                height="14"
-                                                fill="white"
-                                            />
-                                        </clipPath>
-                                    </defs>
-                                </svg>
+                <div class="table-scroll" :style="{maxHeight: `${dimensions.boundedHeight}px`}">
+                    <div class="table" v-if="sortedRecipes[0]">
+                        <template
+                            v-for="(recipe, index) in sortedRecipes"
+                            :key="index"
+                        >
+                            <a @click="setLockedRecipe(recipe)" class="row">
+                                <div class="recipe">
+                                    {{ processTitle(recipe.recipe) }}
+                                </div>
+                                <div>
+                                    <div
+                                        class="youtube-icon"
+                                        v-if="recipe.video_src"
+                                    >
+                                        <svg
+                                            width="20"
+                                            height="14"
+                                            viewBox="0 0 20 14"
+                                            fill="none"
+                                        >
+                                            <g clip-path="url(#clip0_85_15)">
+                                                <path
+                                                    d="M19.5835 2.18627C19.353 1.32526 18.6763 0.648636 17.8153 0.418156C16.2545 0 10 0 10 0C10 0 3.74547 0 2.18637 0.418156C1.32532 0.648636 0.648666 1.32526 0.418176 2.18627C0 3.7453 0 7 0 7C0 7 0 10.2547 0.418176 11.8137C0.648666 12.6747 1.32532 13.3514 2.18637 13.5818C3.74547 14 10 14 10 14C10 14 16.2545 14 17.8136 13.5818C18.6747 13.3514 19.3513 12.6747 19.5818 11.8137C20 10.2547 20 7 20 7C20 7 20 3.7453 19.5835 2.18627Z"
+                                                    fill="#FF0000"
+                                                />
+                                                <path
+                                                    d="M7.99951 9.99955L13.1971 7.00002L7.99951 4.00049V9.99955Z"
+                                                    fill="white"
+                                                />
+                                            </g>
+                                            <defs>
+                                                <clipPath id="clip0_85_15">
+                                                    <rect
+                                                        width="20"
+                                                        height="14"
+                                                        fill="white"
+                                                    />
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="right-align">
+                                    {{
+                                        (
+                                            Math.floor(recipe.difficulty * 10) /
+                                            10
+                                        ).toFixed(1)
+                                    }}
+                                </div>
+                            </a>
+                            <div
+                                class="expanded-row"
+                                v-if="selection?.recipe == recipe.slug"
+                            >
+                                <div class="info">
+                                    <div>
+                                        Level
+                                        {{ Math.floor(lockedData.difficulty) }}
+                                    </div>
+                                    <div>
+                                        <div>
+                                            Recipe time:
+                                            {{ lockedData.minutes }}
+                                        </div>
+                                        <div>Page: {{ lockedData.page }}</div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="right-align">
-                            {{
-                                (
-                                    Math.floor(recipe.difficulty * 10) / 10
-                                ).toFixed(1)
-                            }}
-                        </div>
-                    </a>
+                        </template>
+                    </div>
                 </div>
             </div>
         </div>
-        <div v-if="lockedData.recipe" class="active-recipe">
+        <!-- <div v-if="lockedData.recipe" class="active-recipe">
             <div>
                 <Button @click="setLockedRecipe()">
                     <span class="arrow">&#60;-</span></Button
@@ -187,7 +222,7 @@
                     :date="lockedData.video_date"
                 />
             </div>
-        </div>
+        </div> -->
         <div class="decoration">
             <div
                 v-for="tab in [1, 2, 3, 4]"
@@ -207,10 +242,14 @@
         border-radius: var(--border-radius);
         padding-top: 1em;
         color: var(--text-base-color);
-        overflow: scroll;
+        overflow: hidden;
 
         @media (max-width: 1200px) {
             max-width: 14em;
+        }
+
+        @media (max-width: 900px) {
+            max-width: 100%;
         }
 
         h2 {
@@ -242,9 +281,8 @@
                 opacity: 0.5;
             }
 
-            .table-container {
+            .table-scroll {
                 overflow-y: scroll;
-                max-height: 550px;
             }
 
             .table {
@@ -305,6 +343,10 @@
                         padding-top: 4px;
                     }
                 }
+            }
+
+            .expanded-row {
+                padding: 0.5em 0rem 0.5em 1rem;
             }
 
             @media (max-width: 1200px) {
