@@ -26,9 +26,16 @@
                 this.$store.dispatch("setHasSeenNote", false);
             },
         },
+        watch: {
+            "$route.query": {
+                immediate: true,
+                handler() {
+                    let query = {...this.$route.query};
+                    this.$store.commit("setSelection", query);
+                },
+            },
+        },
         mounted() {
-            let query = {...this.$route.query};
-            this.$store.commit("setSelection", query);
             this.isLoaded = true;
         },
     };

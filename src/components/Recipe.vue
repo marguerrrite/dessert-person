@@ -78,7 +78,6 @@
                 query = {...query, ...newSelection.query};
                 
                 this.$router.push({query});
-                this.$store.commit("setSelection", query);
             },
         },
         watch: {
