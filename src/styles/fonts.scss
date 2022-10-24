@@ -1,11 +1,11 @@
-
 @font-face {
     font-family: "Jaune";
     font-weight: 300;
     font-style: normal;
     font-display: auto;
     unicode-range: U+000-5FF;
-    src: local("Juane"), url("/fonts/NaNJauneTRIAL-MidiLight.woff2") format("woff2");
+    src: local("Juane"),
+        url("/fonts/NaNJauneTRIAL-MidiLight.woff2") format("woff2");
 }
 @font-face {
     font-family: "Jaune";
@@ -13,7 +13,8 @@
     font-style: normal;
     font-display: auto;
     unicode-range: U+000-5FF;
-    src: local("Juane"), url("/fonts/NaNJauneTRIAL-MidiBlond.woff2") format("woff2");
+    src: local("Juane"),
+        url("/fonts/NaNJauneTRIAL-MidiBlond.woff2") format("woff2");
 }
 
 @font-face {
@@ -22,7 +23,8 @@
     font-style: normal;
     font-display: auto;
     unicode-range: U+000-5FF;
-    src: local("Juane"), url("/fonts/NaNJauneTRIAL-MidiRegular.woff2") format("woff2");
+    src: local("Juane"),
+        url("/fonts/NaNJauneTRIAL-MidiRegular.woff2") format("woff2");
 }
 @font-face {
     font-family: "Jaune";
@@ -30,7 +32,8 @@
     font-style: normal;
     font-display: auto;
     unicode-range: U+000-5FF;
-    src: local("Jaune"), url("/fonts/NaNJauneTRIAL-MidiMedium.woff2") format("woff2");
+    src: local("Jaune"),
+        url("/fonts/NaNJauneTRIAL-MidiMedium.woff2") format("woff2");
 }
 @font-face {
     font-family: "Jaune";
@@ -38,7 +41,8 @@
     font-style: normal;
     font-display: auto;
     unicode-range: U+000-5FF;
-    src: local("Juane"), url("/fonts/NaNJauneTRIAL-MidiBold.woff2") format("woff2");
+    src: local("Juane"),
+        url("/fonts/NaNJauneTRIAL-MidiBold.woff2") format("woff2");
 }
 @font-face {
     font-family: "Jaune";
@@ -46,9 +50,18 @@
     font-style: normal;
     font-display: auto;
     unicode-range: U+000-5FF;
-    src: local("Juane"), url("/fonts/NaNJauneTRIAL-MidiBlack.woff2") format("woff2");
+    src: local("Juane"),
+        url("/fonts/NaNJauneTRIAL-MidiBlack.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Molitor";
+    font-weight: 400;
+    font-style: italic;
+    font-display: auto;
+    src: url("/fonts/Molitor+-+Display+Light+Italic-205TF.woff2") format("woff2");
 }
 
 :root {
-    --juane: Jaune, "Inter", sans-serif;
+    --juane: Molitor, "Inter", sans-serif;
 }

@@ -19,7 +19,7 @@ export default defineConfig({
             },
         },
     },
-    assetsInclude: ["**/*.woff", "**/*.woff2", "**/*.png"],
+    assetsInclude: ["**/*.otf", "**/*.woff", "**/*.woff2", "**/*.png"],
     filenameHashing: false,
     plugins: [
         ViteComponents(),

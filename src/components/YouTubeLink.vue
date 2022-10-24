@@ -19,6 +19,13 @@
                 type: Object,
                 required: true,
             },
+            title: {
+                type: String,
+                required: true
+            },
+            date: {
+                type: [String, Date]
+            }
         },
         data() {
             return {};
@@ -60,10 +67,9 @@
         </div>
         <div>
             <div class="title">
-                How To Make Blood Orange Olive Oil Cake With Claire Saffitz (1
-                Mil Special) | Dessert Person
+                {{ title }}
             </div>
-            <div class="date">May 12, 2022</div>
+            <div class="date" v-if="date">{{date}}</div>
         </div>
     </Link>
 </template>
