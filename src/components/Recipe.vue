@@ -9,7 +9,10 @@
         components: {YouTubeLink},
         props: {},
         data() {
-            return {};
+            return {
+                activeSort: ["recipe", 1],
+                sortedRecipes: [],
+            };
         },
         computed: {
             ...mapState({
@@ -20,7 +23,7 @@
         methods: {
             setLockedRecipe(recipe) {
                 if (recipe) {
-                    this.$store.dispatch("setLockedData", this.recipes[recipe]);
+                    this.$store.dispatch("setLockedData", recipe);
                 } else {
                     this.$store.dispatch("setLockedData", {});
                 }
@@ -28,11 +31,52 @@
             processTitle(title) {
                 return title
                     .replaceAll("And", "and")
+                    .replaceAll("Of", "of")
                     .replaceAll("With", "with");
             },
+            toggleSort(sort) {
+                if (sort == this.activeSort[0]) {
+                    this.activeSort[1] = this.activeSort[1] == 1 ? -1 : 1;
+                } else {
+                    this.activeSort = [sort, 1];
+                }
+
+                this.sortRecipes();
+            },
+            sortRecipes() {
+                let sorted = Object.values(this.recipes);
+
+                if (this.activeSort[0] == "recipe") {
+                    if (this.activeSort[1] == 1) {
+                        sorted = sorted.sort((a, b) => {
+                            return a.recipe.localeCompare(b.recipe);
+                        });
+                    } else {
+                        sorted = sorted.sort((a, b) => {
+                            return b.recipe.localeCompare(a.recipe);
+                        });
+                    }
+                } else {
+                    if (this.activeSort[1] == 1) {
+                        sorted = sorted.sort((a, b) => {
+                            return a.difficulty - b.difficulty;
+                        });
+                    } else {
+                        sorted = sorted.sort((a, b) => {
+                            return b.difficulty - a.difficulty;
+                        });
+                    }
+                }
+
+                this.sortedRecipes = sorted;
+            },
         },
-        filters: {},
-        watch: {},
+        watch: {
+            recipes() {
+                this.sortRecipes();
+            },
+        },
+        mounted() {},
     };
 </script>
 
@@ -50,17 +94,37 @@
                 </span>
             </h2>
             <div class="table-container">
-                <div class="table">
+                <div class="table-header">
+                    <div class="header-toggle" @click="toggleSort('recipe')">
+                        Recipe
+                        <span v-if="activeSort[0] == 'recipe'" class="arrow">
+                            {{ activeSort[1] == 1 ? "&#8593;" : "&#8595;" }}
+                        </span>
+                    </div>
+                    <div
+                        class="header-toggle right-align"
+                        @click="toggleSort('difficulty')"
+                    >
+                        <span
+                            v-if="activeSort[0] == 'difficulty'"
+                            class="arrow"
+                        >
+                            {{ activeSort[1] == 1 ? "&#8593;" : "&#8595;" }}
+                        </span>
+                        Difficulty
+                    </div>
+                </div>
+                <div class="table" v-if="sortedRecipes[0]">
                     <a
                         @click="setLockedRecipe(recipe)"
-                        v-for="(recipe, index) in Object.keys(recipes)"
+                        v-for="(recipe, index) in sortedRecipes"
                         class="row"
                     >
-                        <div class="index">
-                            {{ index + 1 }}
-                        </div>
                         <div>
-                            {{ processTitle(recipes[recipe].recipe) }}
+                            {{ processTitle(recipe.recipe) }}
+                        </div>
+                        <div class="right-align">
+                            {{ (Math.floor(recipe.difficulty * 10)/10).toFixed(1) }}
                         </div>
                     </a>
                 </div>
@@ -101,7 +165,7 @@
 <style lang="scss">
     .Recipe {
         position: relative;
-        max-width: 24em;
+        max-width: 22em;
         width: 100%;
         background: var(--background-color);
         border-radius: var(--border-radius);
@@ -130,8 +194,6 @@
         }
 
         .recipe-list-container {
-            font-family: var(--juane);
-
             h2 {
                 text-align: center;
                 text-orientation: sideways;
@@ -150,16 +212,47 @@
                 display: flex;
                 flex-direction: column;
                 height: 100%;
+
+                .right-align {
+                    text-align: right;
+                    font-variant-numeric:tabular;
+                }
             }
+
+            .table-header {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                padding: 0.25em 1rem 0.25em 1rem;
+                font-size: 0.7em;
+
+                &:hover {
+                    cursor: pointer;
+                }
+            }
+
+            .header-toggle {
+                color: rgba($dp-dark, 0.5);
+
+                span {
+                    color: rgba($dp-dark, 0.5);
+                }
+            }
+
             .row {
                 display: grid;
-                grid-template-columns: 1em auto;
+                grid-template-columns: 1fr auto;
                 gap: 1em;
-                padding: 0.7em 1rem 0.7em 1rem;
-                border-top: 2px solid $dp-grids;
+                padding: 0.5em 1rem 0.5em 1rem;
+                border-top: 1px solid $dp-pink;
                 align-items: baseline;
                 color: $dp-dark;
                 line-height: 1.2;
+                font-size: 0.9em;
+                text-decoration: none;
+
+                .index {
+                    opacity: 0.4;
+                }
 
                 &:hover {
                     cursor: pointer;

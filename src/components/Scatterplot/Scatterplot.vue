@@ -435,7 +435,7 @@
                 />
 
                 <rect
-                    class="listener"
+                    class="Chart__listener listener"
                     :height="dimensions.boundedHeight"
                     :width="dimensions.boundedWidth"
                     @mousemove="onHover"
