@@ -26,9 +26,11 @@
                 if (recipe.slug != this.selection.recipe) {
                     this.$store.dispatch("setLockedData", recipe);
                     this.setSelection({query: {recipe: recipe.slug}});
+                    this.$store.dispatch("setLockedData", recipe);
                 } else {
                     this.$store.dispatch("setLockedData", {});
                     this.setSelection({query: {recipe: undefined}});
+                    this.$store.dispatch("setLockedData", {});
                 }
             },
             processTitle(title) {
