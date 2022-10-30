@@ -98,6 +98,7 @@
             ...mapState({
                 data: state => state.data,
                 lockedData: state => state.lockedData,
+                selection: state => state.selection,
             }),
             yMax() {
                 return 6;
@@ -300,18 +301,33 @@
                 this.hoveredData = {};
                 this.hoveredCoords = {x: 0, y: 0};
             },
-            setLockedCoords($event) {
+            changeRoute() {
+                let query = {...this.$route.query};
+                if (!query["recipe"] || query["recipe"] != this.hoveredData.slug) {
+                    query["recipe"] = this.hoveredData.slug;
+                    this.$router.push({query});
+                } else {
+                    query["recipe"] = undefined;
+                    this.$router.push({query});
+                }
+            },
+            setLockedCoords() {
                 if (
                     !this.lockedIndex ||
                     this.lockedIndex != this.hoveredIndex
                 ) {
                     this.lockedCoords = {...this.hoveredCoords};
                     this.lockedIndex = this.hoveredIndex;
-                    this.$store.dispatch("setLockedData", this.hoveredData);
+
+                    let selection = {...this.selection};
+                    selection["recipe"] = this.hoveredData.slug;
+                    this.$store.commit("setSelection", selection);
+
+                    //this.$store.dispatch("setLockedData", this.hoveredData);
                 } else {
                     this.currentLocedCoords = {x: 0, y: 0};
                     this.lockedIndex = "";
-                    this.$store.dispatch("setLockedData", {});
+                    //this.$store.dispatch("setLockedData", {});
                 }
             },
         },
@@ -373,7 +389,7 @@
             class="chart"
             :width="dimensions.width"
             :height="dimensions.height"
-            @click="setLockedCoords"
+            @click="changeRoute"
         >
             <g
                 class="x-rules"

@@ -19,6 +19,8 @@ const store = createStore({
             recipes: {},
             selection: {
                 recipe: "",
+                chapter: "",
+                other: []
             },
             dimensions: {}
         };

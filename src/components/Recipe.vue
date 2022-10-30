@@ -22,15 +22,25 @@
             }),
         },
         methods: {
-            setLockedRecipe(recipe) {
-                if (recipe.slug != this.selection.recipe) {
-                    this.$store.dispatch("setLockedData", recipe);
-                    this.setSelection({query: {recipe: recipe.slug}});
-                    this.$store.dispatch("setLockedData", recipe);
+            // setLockedRecipe(recipe) {
+            //     if (recipe.slug != this.selection.recipe) {
+            //         this.$store.dispatch("setLockedData", recipe);
+            //         this.setSelection({query: {recipe: recipe.slug}});
+            //         this.$store.dispatch("setLockedData", recipe);
+            //     } else {
+            //         this.$store.dispatch("setLockedData", {});
+            //         this.setSelection({query: {recipe: undefined}});
+            //         this.$store.dispatch("setLockedData", {});
+            //     }
+            // },
+            changeRoute(recipe) {
+                let query = {...this.$route.query};
+                if (!query["recipe"] || query["recipe"] != recipe.slug) {
+                    query["recipe"] = recipe.slug;
+                    this.$router.push({query});
                 } else {
-                    this.$store.dispatch("setLockedData", {});
-                    this.setSelection({query: {recipe: undefined}});
-                    this.$store.dispatch("setLockedData", {});
+                    query["recipe"] = undefined;
+                    this.$router.push({query});
                 }
             },
             processTitle(title) {
@@ -131,7 +141,7 @@
                             v-for="(recipe, index) in sortedRecipes"
                             :key="index"
                         >
-                            <a @click="setLockedRecipe(recipe)" class="row">
+                            <a @click="changeRoute(recipe)" class="row">
                                 <div class="recipe">
                                     {{ processTitle(recipe.recipe) }}
                                 </div>
