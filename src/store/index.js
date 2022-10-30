@@ -11,7 +11,6 @@ const store = createStore({
                     : {hasSeenNote: false, expire: ""},
             mode: "dev",
             lockedData: {
-                coords: {x: 0, y: 0},
                 data: {},
                 index: "",
             },

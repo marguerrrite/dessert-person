@@ -17,6 +17,7 @@
     import Circles from "./Circles.vue";
     import CrossHairs from "./CrossHairs.vue";
     import Tooltip from "./Tooltip.vue";
+    import {trigger} from "@vue/reactivity";
 
     export default {
         name: "Scatterplot",
@@ -99,6 +100,7 @@
                 data: state => state.data,
                 lockedData: state => state.lockedData,
                 selection: state => state.selection,
+                recipes: state => state.recipes,
             }),
             yMax() {
                 return 6;
@@ -252,7 +254,12 @@
                 return this.yScale(this.yAccessor(d));
             },
             processTitle(title) {
-                return title.toLowerCase().replaceAll(" ", "_");
+                let slug = title
+                    .toLowerCase()
+                    .replaceAll(" ", "-")
+                    .replaceAll("'", "");
+                slug = slug.replace(/(?:[^\w-.]+|_+)/g, " ");
+                return slug;
             },
             calculateDotCoords(data) {
                 let dots = [];
@@ -303,7 +310,10 @@
             },
             changeRoute() {
                 let query = {...this.$route.query};
-                if (!query["recipe"] || query["recipe"] != this.hoveredData.slug) {
+                if (
+                    !query["recipe"] ||
+                    query["recipe"] != this.hoveredData.slug
+                ) {
                     query["recipe"] = this.hoveredData.slug;
                     this.$router.push({query});
                 } else {
@@ -311,25 +321,25 @@
                     this.$router.push({query});
                 }
             },
-            setLockedCoords() {
-                if (
-                    !this.lockedIndex ||
-                    this.lockedIndex != this.hoveredIndex
-                ) {
-                    this.lockedCoords = {...this.hoveredCoords};
-                    this.lockedIndex = this.hoveredIndex;
+            // setLockedCoords() {
+            //     if (
+            //         !this.lockedIndex ||
+            //         this.lockedIndex != this.hoveredIndex
+            //     ) {
+            //         this.lockedCoords = {...this.hoveredCoords};
+            //         this.lockedIndex = this.hoveredIndex;
 
-                    let selection = {...this.selection};
-                    selection["recipe"] = this.hoveredData.slug;
-                    this.$store.commit("setSelection", selection);
+            //         let selection = {...this.selection};
+            //         selection["recipe"] = this.hoveredData.slug;
+            //         this.$store.commit("setSelection", selection);
 
-                    //this.$store.dispatch("setLockedData", this.hoveredData);
-                } else {
-                    this.currentLocedCoords = {x: 0, y: 0};
-                    this.lockedIndex = "";
-                    //this.$store.dispatch("setLockedData", {});
-                }
-            },
+            //         //this.$store.dispatch("setLockedData", this.hoveredData);
+            //     } else {
+            //         this.currentLocedCoords = {x: 0, y: 0};
+            //         this.lockedIndex = "";
+            //         //this.$store.dispatch("setLockedData", {});
+            //     }
+            // },
         },
         watch: {
             dataDots() {
@@ -337,28 +347,77 @@
                     this.isLoaded = true;
                 }
             },
-            lockedData: {
+            "$route.query": {
+                immediate: true,
                 deep: true,
                 handler() {
-                    if (!this.lockedData.recipe && this.lockedCoords["x"]) {
-                        // Clear coords when Recipe changes active recipe.
-                        this.lockedCoords = {x: 0, y: 0};
+                    let query = {...this.$route.query};
+                    let selection = {...this.selection};
+                    let recipe = query.recipe;
+
+                    if (this.lockedData.recipe != recipe) {
+                        // set locked data and coords
+
+                        let data = this.recipes[recipe];
+                        this.lockedIndex = Object.keys(this.recipes).indexOf(
+                            recipe
+                        );
+                        
+                        if (this.coordLookup[recipe]) {
+                            this.lockedCoords = {
+                                x: this.coordLookup[recipe].x,
+                                y: this.coordLookup[recipe].y,
+                            };
+                        }
+
+                        selection["recipe"] = recipe;
+
+                        this.$store.dispatch("setLockedData", data);
+                        this.$store.commit("setSelection", selection);
+                    } else if (!this.selection.recipe) {
+                        // clear
                         this.lockedIndex = "";
-                    } else if (
-                        this.lockedData.recipe &&
-                        this.lockedCoords["x"] == 0
-                    ) {
+                        this.lockedCoords = {x: 0, y: 0};
+                    }
+                },
+            },
+
+            coordLookup: {
+                handler() {
+                    let query = {...this.$route.query};
+                    let recipe = query.recipe;
+
+                    if (this.lockedCoords.x == 0 && this.coordLookup[recipe]) {
                         this.lockedCoords = {
-                            x: this.coordLookup[
-                                this.processTitle(this.lockedData.recipe)
-                            ].x,
-                            y: this.coordLookup[
-                                this.processTitle(this.lockedData.recipe)
-                            ].y,
+                            x: this.coordLookup[recipe].x,
+                            y: this.coordLookup[recipe].y,
                         };
                     }
                 },
             },
+
+            // lockedData: {
+            //     deep: true,
+            //     handler() {
+            //         if (!this.lockedData.recipe && this.lockedCoords["x"]) {
+            //             // Clear coords when Recipe changes active recipe.
+            //             this.lockedCoords = {x: 0, y: 0};
+            //             this.lockedIndex = "";
+            //         } else if (
+            //             this.lockedData.recipe &&
+            //             this.lockedCoords["x"] == 0
+            //         ) {
+            //             this.lockedCoords = {
+            //                 x: this.coordLookup[
+            //                     this.processTitle(this.lockedData.recipe)
+            //                 ].x,
+            //                 y: this.coordLookup[
+            //                     this.processTitle(this.lockedData.recipe)
+            //                 ].y,
+            //             };
+            //         }
+            //     },
+            // },
         },
         mounted() {
             this.setDimensions();

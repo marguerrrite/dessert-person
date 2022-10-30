@@ -18,6 +18,7 @@
             ...mapState({
                 hasSeenNote: state => state.hasSeenNote,
                 selection: state => state.selection,
+                recipes: state => state.recipes,
             }),
         },
 
@@ -27,17 +28,12 @@
             },
         },
         watch: {
-            "$route.query": {
-                immediate: true,
-                handler() {
-                    let query = {...this.$route.query};
-                    this.$store.commit("setSelection", query);
-                },
-            },
-        },
-        mounted() {
-            this.isLoaded = true;
-        },
+            recipes() {
+                if (Object.keys(this.recipes).length) {
+                    this.isLoaded = true;
+                }
+            }
+        }
     };
 </script>
 
