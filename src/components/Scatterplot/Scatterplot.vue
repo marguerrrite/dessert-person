@@ -4,13 +4,6 @@
 
     import {
         scaleLinear,
-        scaleUtc,
-        range,
-        max,
-        timeFormat,
-        interpolateRdPu,
-        interpolateCool,
-        median,
     } from "d3";
     import {Delaunay} from "d3-delaunay";
     import Axis from "./Axis.vue";
@@ -321,25 +314,6 @@
                     this.$router.push({query});
                 }
             },
-            // setLockedCoords() {
-            //     if (
-            //         !this.lockedIndex ||
-            //         this.lockedIndex != this.hoveredIndex
-            //     ) {
-            //         this.lockedCoords = {...this.hoveredCoords};
-            //         this.lockedIndex = this.hoveredIndex;
-
-            //         let selection = {...this.selection};
-            //         selection["recipe"] = this.hoveredData.slug;
-            //         this.$store.commit("setSelection", selection);
-
-            //         //this.$store.dispatch("setLockedData", this.hoveredData);
-            //     } else {
-            //         this.currentLocedCoords = {x: 0, y: 0};
-            //         this.lockedIndex = "";
-            //         //this.$store.dispatch("setLockedData", {});
-            //     }
-            // },
         },
         watch: {
             dataDots() {
@@ -355,7 +329,7 @@
                     let selection = {...this.selection};
                     let recipe = query.recipe;
 
-                    if (this.lockedData.recipe != recipe) {
+                    if (this.lockedData?.recipe != recipe) {
                         // set locked data and coords
 
                         let data = this.recipes[recipe];
@@ -395,29 +369,6 @@
                     }
                 },
             },
-
-            // lockedData: {
-            //     deep: true,
-            //     handler() {
-            //         if (!this.lockedData.recipe && this.lockedCoords["x"]) {
-            //             // Clear coords when Recipe changes active recipe.
-            //             this.lockedCoords = {x: 0, y: 0};
-            //             this.lockedIndex = "";
-            //         } else if (
-            //             this.lockedData.recipe &&
-            //             this.lockedCoords["x"] == 0
-            //         ) {
-            //             this.lockedCoords = {
-            //                 x: this.coordLookup[
-            //                     this.processTitle(this.lockedData.recipe)
-            //                 ].x,
-            //                 y: this.coordLookup[
-            //                     this.processTitle(this.lockedData.recipe)
-            //                 ].y,
-            //             };
-            //         }
-            //     },
-            // },
         },
         mounted() {
             this.setDimensions();
@@ -437,13 +388,6 @@
     <div class="Scatterplot" ref="container">
         <div v-if="!isLoaded">Loading...</div>
         <h2>Recipe Matrix</h2>
-        <!-- <Tooltip
-                hoveredData={hoveredData}
-                hoveredCoords={hoveredCoords ? [hoveredCoords.x, hoveredCoords.y] : [dimensions.boundedWidth / 2, dimensions.boundedHeight]}
-                dimensions={dimensions}
-                data={hoveredData}
-            /> -->
-
         <svg
             class="chart"
             :width="dimensions.width"
@@ -528,7 +472,7 @@
         </svg>
 
         <Tooltip
-            v-if="lockedData.recipe"
+            v-if="lockedData?.recipe"
             locked
             :no-pointer-events="!!lockedData"
             :data="lockedData"

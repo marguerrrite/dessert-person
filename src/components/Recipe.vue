@@ -35,7 +35,8 @@
             // },
             changeRoute(recipe) {
                 let query = {...this.$route.query};
-                if (!query["recipe"] || query["recipe"] != recipe.slug) {
+
+                if (recipe && query["recipe"] != recipe.slug) {
                     query["recipe"] = recipe.slug;
                     this.$router.push({query});
                 } else {
@@ -88,16 +89,13 @@
             setSelection(newSelection) {
                 let query = {...this.$route}.query;
                 query = {...query, ...newSelection.query};
-                
+
                 this.$router.push({query});
             },
         },
-        watch: {
-            recipes() {
-                this.sortRecipes();
-            },
+        mounted() {
+            this.sortRecipes();
         },
-        mounted() {},
     };
 </script>
 
@@ -135,7 +133,10 @@
                         Difficulty
                     </div>
                 </div>
-                <div class="table-scroll" :style="{maxHeight: `${dimensions.boundedHeight}px`}">
+                <div
+                    class="table-scroll"
+                    :style="{maxHeight: `${dimensions.boundedHeight}px`}"
+                >
                     <div class="table" v-if="sortedRecipes[0]">
                         <template
                             v-for="(recipe, index) in sortedRecipes"
