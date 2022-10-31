@@ -32,8 +32,8 @@
                 if (Object.keys(this.recipes).length) {
                     this.isLoaded = true;
                 }
-            }
-        }
+            },
+        },
     };
 </script>
 
@@ -63,8 +63,9 @@
         height: 100%;
         padding-top: 0em;
         position: relative;
-        background-color: var(--background-color);
-        background: lightpink;
+        background: url("/images/background-marble-06.png");
+        background-repeat: no-repeat;
+        background-size: cover;
 
         .metas {
             padding: 1em 0;

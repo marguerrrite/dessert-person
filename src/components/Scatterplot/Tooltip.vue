@@ -75,6 +75,7 @@
 
         .tooltip-contents {
             background: var(--background-color);
+            background: $dp-teal;
             border-radius: 4px;
             box-shadow: 0px 2px 2px 0px rgba($dp-dark, 0.1);
             padding: 0.2em 0.5em;
@@ -89,7 +90,7 @@
         .title {
             font-size: 0.8em;
             font-weight: 600;
-            color: $dp-dark;
+            color: white;
         }
     }
 </style>

@@ -54,6 +54,16 @@
         url("/fonts/NaNJauneTRIAL-MidiBlack.woff2") format("woff2");
 }
 
+@font-face {
+    font-family: "Molitor";
+    font-weight: 500;
+    font-style: italic;
+    font-display: auto;
+    unicode-range: U+000-5FF;
+    src: local("Juane"),
+        url("/fonts/Molitor+-+Display+Italic-205TF.woff2") format("woff2");
+}
+
 :root {
-    --juane: Jaune, "Inter", sans-serif;
+    --juane: Molitor, "Inter", sans-serif;
 }

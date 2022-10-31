@@ -11,6 +11,7 @@
             return {
                 activeSort: ["recipe", 1],
                 sortedRecipes: [],
+                isLoaded: false,
             };
         },
         computed: {
@@ -22,17 +23,6 @@
             }),
         },
         methods: {
-            // setLockedRecipe(recipe) {
-            //     if (recipe.slug != this.selection.recipe) {
-            //         this.$store.dispatch("setLockedData", recipe);
-            //         this.setSelection({query: {recipe: recipe.slug}});
-            //         this.$store.dispatch("setLockedData", recipe);
-            //     } else {
-            //         this.$store.dispatch("setLockedData", {});
-            //         this.setSelection({query: {recipe: undefined}});
-            //         this.$store.dispatch("setLockedData", {});
-            //     }
-            // },
             changeRoute(recipe) {
                 let query = {...this.$route.query};
 
@@ -92,9 +82,56 @@
 
                 this.$router.push({query});
             },
+            scrollList(recipe) {
+                let scrollDiv = this.$refs["table-scroll"];
+
+                let scrollDepth = scrollDiv.scrollTop;
+                let rowHeight = this.$refs[recipe][0].clientHeight;
+                let rowOffsetTop = this.$refs[recipe][0].offsetTop - rowHeight;
+
+                let tableHeight =
+                    this.$refs["table-container"].clientHeight * 0.85;
+
+                let isRecipeVisible =
+                    rowOffsetTop > scrollDepth &&
+                    rowOffsetTop - 50 < scrollDepth + tableHeight;
+
+                console.log(rowOffsetTop, scrollDepth);
+                console.log("visible?:", isRecipeVisible);
+
+                if (!isRecipeVisible) {
+                    scrollDiv.scrollTo({
+                        top: rowOffsetTop - 70,
+                        behavior: "smooth",
+                        duration: 100,
+                    });
+                }
+            },
+            humanTime(minutes) {
+                if (minutes < 60) {
+                    return `${minutes} minutes`;
+                }
+
+                let min = minutes % 60;
+                let hours = Math.floor(minutes / 60);
+
+                return `${hours} ${
+                    hours == 1 ? "hour" : "hours"
+                } ${min} minutes`;
+            },
         },
         mounted() {
             this.sortRecipes();
+        },
+        watch: {
+            lockedData: {
+                deep: true,
+                handler() {
+                    if (this.lockedData?.slug) {
+                        this.scrollList(this.lockedData?.slug);
+                    }
+                },
+            },
         },
     };
 </script>
@@ -112,7 +149,7 @@
                     {{ letter }}
                 </span>
             </h2>
-            <div class="table-container">
+            <div class="table-container" ref="table-container">
                 <div class="table-header">
                     <div class="header-toggle" @click="toggleSort('recipe')">
                         Recipe
@@ -135,14 +172,25 @@
                 </div>
                 <div
                     class="table-scroll"
+                    ref="table-scroll"
                     :style="{maxHeight: `${dimensions.boundedHeight}px`}"
                 >
-                    <div class="table" v-if="sortedRecipes[0]">
+                    <div class="table" v-if="sortedRecipes[0]" ref="table">
                         <template
                             v-for="(recipe, index) in sortedRecipes"
                             :key="index"
                         >
-                            <a @click="changeRoute(recipe)" class="row">
+                            <a
+                                @click="changeRoute(recipe)"
+                                class="row"
+                                :class="{
+                                    active: selection?.recipe == recipe.slug,
+                                    inactive:
+                                        selection?.recipe &&
+                                        selection?.recipe != recipe.slug,
+                                }"
+                                :ref="recipe.slug"
+                            >
                                 <div class="recipe">
                                     {{ processTitle(recipe.recipe) }}
                                 </div>
@@ -160,7 +208,7 @@
                                             <g clip-path="url(#clip0_85_15)">
                                                 <path
                                                     d="M19.5835 2.18627C19.353 1.32526 18.6763 0.648636 17.8153 0.418156C16.2545 0 10 0 10 0C10 0 3.74547 0 2.18637 0.418156C1.32532 0.648636 0.648666 1.32526 0.418176 2.18627C0 3.7453 0 7 0 7C0 7 0 10.2547 0.418176 11.8137C0.648666 12.6747 1.32532 13.3514 2.18637 13.5818C3.74547 14 10 14 10 14C10 14 16.2545 14 17.8136 13.5818C18.6747 13.3514 19.3513 12.6747 19.5818 11.8137C20 10.2547 20 7 20 7C20 7 20 3.7453 19.5835 2.18627Z"
-                                                    fill="#FF0000"
+                                                    fill="#d7c6c8"
                                                 />
                                                 <path
                                                     d="M7.99951 9.99955L13.1971 7.00002L7.99951 4.00049V9.99955Z"
@@ -194,17 +242,27 @@
                             >
                                 <div class="info">
                                     <div>
-                                        Level
-                                        {{ Math.floor(lockedData.difficulty) }}
-                                    </div>
-                                    <div>
-                                        <div>
-                                            Recipe time:
-                                            {{ lockedData.minutes }}
-                                        </div>
-                                        <div>Page: {{ lockedData.page }}</div>
+                                        {{ lockedData.section }}
                                     </div>
                                 </div>
+                                <div class="info">
+                                    <div>
+                                        Level
+                                        {{ Math.floor(lockedData.difficulty) }}
+                                        | Total time:
+                                        {{ humanTime(lockedData.minutes) }}
+
+                                        <!-- | Page: {{ lockedData.page }} -->
+                                    </div>
+                                </div>
+                                <YouTubeLink
+                                    v-if="lockedData.video_thumbnail"
+                                    :data="lockedData"
+                                    :src="lockedData.video_src"
+                                    :thumbnail="lockedData.video_thumbnail"
+                                    :title="lockedData.video_title"
+                                    :date="lockedData.video_date"
+                                />
                             </div>
                         </template>
                     </div>
@@ -254,7 +312,7 @@
         border-radius: var(--border-radius);
         padding-top: 1em;
         color: var(--text-base-color);
-        overflow: hidden;
+        //overflow: hidden;
 
         @media (max-width: 1200px) {
             max-width: 14em;
@@ -346,7 +404,6 @@
 
                 &:hover {
                     cursor: pointer;
-                    background: $dp-stripe;
                 }
 
                 .youtube-icon {
@@ -355,10 +412,43 @@
                         padding-top: 4px;
                     }
                 }
+
+                .recipe {
+                    padding-right: 0.5em;
+                    opacity: 0.7;
+                }
+
+                &.active {
+                    background: white;
+                    padding-bottom: 0.1em;
+
+                    .recipe {
+                        font-weight: 600;
+                        padding-right: 0.25em;
+                        opacity: 1;
+                    }
+                }
+
+                &.inactive {
+                    background: rgba($dp-pink-pink, 0.05);
+
+                    &:hover {
+                        background: rgba($dp-pink-pink, 0.15);
+                    }
+                }
             }
 
             .expanded-row {
-                padding: 0.5em 0rem 0.5em 1rem;
+                padding: 0em 3.1rem 0.6em 1rem;
+
+                .info {
+                    display: flex;
+                    font-size: 0.825em;
+                    width: 100%;
+                    justify-content: space-between;
+                    padding: 0.25em 0 0.5em;
+                    color: rgba($dp-dark, 0.75);
+                }
             }
 
             @media (max-width: 1200px) {

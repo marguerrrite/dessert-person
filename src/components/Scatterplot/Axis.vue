@@ -315,7 +315,7 @@
             class="Axis__label__wrapper"
             :style="{
                 transform: `translate(${-xscales.mins55(minrules[1])}px, ${
-                    dimensions.boundedHeight + yRuleDistance
+                    dimensions.boundedHeight - (yRuleDistance)
                 }px) rotate(-90deg)`,
             }"
         >
