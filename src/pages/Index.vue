@@ -45,7 +45,7 @@
                 Cookbook by Clare Saffitz / Book & Infographic designed by Mia
                 Hammond
             </div>
-            <button @click="toggleNote">See Note</button>
+            <!-- <button @click="toggleNote">See Note</button> -->
         </div>
         <div class="flex">
             <Scatterplot ref="plot" />
@@ -66,6 +66,8 @@
         background: url("/images/background-marble-06.png");
         background-repeat: no-repeat;
         background-size: cover;
+        height: 100vh;
+        max-height: 2000px;
 
         .metas {
             padding: 1em 0;

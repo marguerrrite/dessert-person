@@ -1,19 +1,4 @@
-import {format as d3Format} from "d3-format";
-import {timeDay as d3TimeDay} from "d3-time";
-import {timeDays as d3TimeDays} from "d3-time";
-import {timeMonth as d3TimeMonth} from "d3-time";
-
 let utils = {
-    getReadingTime(string) {
-        let WORDS_PER_MINUTE = 260;
-        let result = {};
-        let regex = /\w+/g;
-
-        result.wordCount = (string || "").match(regex).length;
-        result.readingTime = Math.ceil(result.wordCount / WORDS_PER_MINUTE);
-
-        return result;
-    },
     isInViewport(elem) {
         var distance = elem.getBoundingClientRect();
         return (
@@ -21,7 +6,8 @@ let utils = {
             distance.left >= 0 &&
             distance.bottom <=
                 (window.innerHeight || document.documentElement.clientHeight) &&
-            distance.right <= (window.innerWidth || document.documentElement.clientWidth)
+            distance.right <=
+                (window.innerWidth || document.documentElement.clientWidth)
         );
     },
     animationFrame: callback => {
@@ -40,10 +26,14 @@ let utils = {
             }, timeout);
         };
     },
-
+    slugify(str) {
+        let slug = str.toLowerCase().replaceAll(" ", "-").replaceAll("'", "");
+        slug = slug.replace(/(?:[^\w-.]+|_+)/g, " ");
+        return slug;
+    },
 
     filters: {
-        getReadingTime: string => utils.getReadingTime(string),
+        slugify: string => utils.slugify(string),
     },
 };
 

@@ -1,6 +1,5 @@
 <script>
     import {mapState} from "vuex";
-    import {extent, min, max} from "d3";
     import utils from "@/scripts/utils.js";
 
     export default {
@@ -27,17 +26,45 @@
                 data: state => state.data,
                 lockedData: state => state.lockedData,
                 recipes: state => state.recipes,
+                doShowChapterColors: state => state.doShowChapterColors,
+                chapterColors: state => state.chapterColors,
+                selection: state => state.selection,
             }),
             chapterList() {
-                let chapterList = Object.values(this.recipes).map(recipe => recipe["section"]);
+                let chapterList = Object.values(this.recipes).map(
+                    recipe => recipe["section"]
+                );
                 return (chapterList = [...new Set(chapterList)]);
             },
             filterOptions() {
                 let options = [...this.chapterList];
                 return options;
-            }
+            },
         },
-        methods: {},
+        methods: {
+            setChapter(chapter) {
+                let query = {...this.$route.query};
+                let newChap = utils.slugify(chapter);
+
+                let newSelection = {...this.selection};
+
+                if (!query["chapter"] || query["chapter"] != newChap) {
+                    query["chapter"] = newChap;
+                    query["recipe"] = undefined;
+                    newSelection["chapter"] = newChap;
+                    newSelection["recipe"] = "";
+                } else {
+                    query["chapter"] = undefined;
+                    newSelection["chapter"] = "";
+                }
+
+                this.$router.push({query});
+                this.$store.commit("setSelection", newSelection);
+            },
+            toggleChapterColors() {
+                this.$store.commit("toggleChapterColors");
+            },
+        },
         watch: {},
     };
 </script>
@@ -46,7 +73,10 @@
     <div class="FilterBar">
         <div class="FilterBar__controls">
             <div class="FilterBar__controls--chapters">
-                <button class="FilterBar__toggle"  @click="shouldShowChapters = !shouldShowChapters">
+                <button
+                    class="FilterBar__toggle"
+                    @click="shouldShowChapters = !shouldShowChapters"
+                >
                     Chapters
                     <div class="FilterBar__toggle__icon">
                         {{ shouldShowChapters ? "—" : "+" }}
@@ -57,15 +87,17 @@
                     <label class="FilterBar__switch">
                         <input
                             type="checkbox"
-                            value="{shouldShowColors}"
-                            class="checked"
-                            checked="{shouldShowColors}"
+                            :value="doShowChapterColors"
+                            @change="toggleChapterColors"
                         />
                         <div class="FilterBar__slider round"></div>
                     </label>
                 </div>
             </div>
-            <button class="FilterBar__toggle" @click="shouldShowExtra = !shouldShowExtra">
+            <button
+                class="FilterBar__toggle"
+                @click="shouldShowExtra = !shouldShowExtra"
+            >
                 Extra
                 <div class="FilterBar__toggle__icon">
                     {{ shouldShowExtra ? "—" : "+" }}
@@ -78,10 +110,17 @@
                     v-for="(filter, i) in filterOptions"
                     :key="i"
                     class="FilterBar__button"
+                    :class="{
+                        active: selection.chapter == slugify(filter),
+                        inactive:
+                            selection.chapter &&
+                            selection.chapter != slugify(filter),
+                    }"
+                    @click="setChapter(filter)"
                 >
                     <div
                         class="FilterBar__button__dot"
-                        :style="{background: sectionColors[i]}"
+                        :style="{background: chapterColors[slugify(filter)]}"
                     ></div>
                     <div>
                         {{ filter }}
@@ -91,9 +130,11 @@
             <div class="FilterBar__extra">
                 <div class="FilterBar__item" v-if="shouldShowExtra">
                     <button class="FilterBar__button">YouTube</button>
-                    <button class="FilterBar__button">Recipes I've Made!</button>
+                    <button class="FilterBar__button">
+                        Recipes I've Made!
+                    </button>
                     <button class="FilterBar__button">Voronoi Diagram</button>
-                    
+
                     <!-- <Tooltip class="FilterBar__tooltip">
                                 <FontAwesomeIcon class="FilterBar__item__icon" icon={faQuestionCircle} />
                                 <div>
@@ -155,7 +196,7 @@
 
             .UiTooltip__toggle--active {
                 .FilterBar__item__icon {
-                    color: $dp-dark;
+                    color: $dp-pink-pink;
                 }
             }
         }
@@ -163,15 +204,17 @@
         &__button {
             border: 1px solid lighten($dp-taupe, 10%);
             background: white;
-            font-size: 0.8em;
-            padding: 0.5em 1em;
+            font-size: 0.8rem;
+            padding: 0.35em 0.7em;
             border-radius: 3px;
             display: flex;
             align-items: center;
+            color: $dp-dark;
+            transition: all 100ms linear;
 
             &:hover {
-                background: #f7f6f6;
                 cursor: pointer;
+                transition: all 100ms linear;
             }
 
             &__dot {
@@ -181,13 +224,22 @@
                 margin-right: 0.5em;
             }
 
-            &--active {
-                background: $dp-taupe;
-                border-color: $dp-taupe;
+            &.active {
+                background: $dp-pink;
+                border-color: $dp-pink;
 
                 &:hover {
-                    background: $dp-taupe;
-                    border-color: $dp-taupe;
+                    background: $dp-pink;
+                    border-color: $dp-pink;
+                    opacity: 1;
+                }
+            }
+
+            &.inactive {
+                opacity: 0.7;
+
+                &:hover {
+                    opacity: 0.9;
                 }
             }
         }
@@ -219,7 +271,7 @@
         }
 
         &__slider {
-            background-color: #ccc;
+            background-color: $dp-taupe;
             bottom: 0;
             cursor: pointer;
             left: 0;
@@ -264,7 +316,7 @@
             }
 
             input:checked + .FilterBar__slider {
-                background-color: $dp-dark;
+                background-color: $paradiddle-pink;
             }
 
             input:checked + .FilterBar__slider:before {

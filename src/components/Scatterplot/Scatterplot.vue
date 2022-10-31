@@ -2,9 +2,7 @@
     import {mapState} from "vuex";
     import utils from "@/scripts/utils.js";
 
-    import {
-        scaleLinear,
-    } from "d3";
+    import {scaleLinear} from "d3";
     import {Delaunay} from "d3-delaunay";
     import Axis from "./Axis.vue";
     import Circles from "./Circles.vue";
@@ -94,6 +92,7 @@
                 lockedData: state => state.lockedData,
                 selection: state => state.selection,
                 recipes: state => state.recipes,
+                doShowChapterColors: state => state.doShowChapterColors,
             }),
             yMax() {
                 return 6;
@@ -262,6 +261,7 @@
                         x: this.xAccessorScaled(row),
                         y: this.yAccessorScaled(row),
                         title: row.recipe,
+                        section: utils.slugify(row.section)
                     };
                     dots.push(obj);
                     coordLookup[this.processTitle(row.recipe)] = obj;
@@ -336,7 +336,7 @@
                         this.lockedIndex = Object.keys(this.recipes).indexOf(
                             recipe
                         );
-                        
+
                         if (this.coordLookup[recipe]) {
                             this.lockedCoords = {
                                 x: this.coordLookup[recipe].x,
@@ -352,6 +352,11 @@
                         // clear
                         this.lockedIndex = "";
                         this.lockedCoords = {x: 0, y: 0};
+                    }
+
+                    if (query.chapter) {
+                        selection["chapter"] = utils.slugify(query.chapter);
+                        this.$store.commit("setSelection", selection);
                     }
                 },
             },
@@ -518,7 +523,7 @@
         border-radius: var(--border-radius);
 
         @media (max-height: 1600px) {
-            max-height: 900px;
+            max-height: 600px;
         }
 
         h2 {
@@ -557,7 +562,7 @@
         }
 
         height: calc(90vh - 6em);
-        min-height: 620px;
+        min-height: 520px;
         min-width: 300px;
         max-width: 1700px;
         width: calc(100% + 1em);

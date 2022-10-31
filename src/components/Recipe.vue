@@ -1,6 +1,6 @@
 <script>
     import {mapState} from "vuex";
-    import {extent, min, max} from "d3";
+    import utils from "@/scripts/utils.js";
     import YouTubeLink from "./YouTubeLink.vue";
 
     export default {
@@ -50,7 +50,19 @@
                 this.sortRecipes();
             },
             sortRecipes() {
-                let sorted = Object.values(this.recipes);
+                let sorted;
+
+                console.log(this.selection)
+
+                if (this.selection.chapter) {
+                    sorted = Object.values(this.recipes).filter(
+                        recipe =>
+                            utils.slugify(recipe.section) ==
+                            this.selection.chapter
+                    );
+                } else {
+                    sorted = Object.values(this.recipes);
+                }
 
                 if (this.activeSort[0] == "recipe") {
                     if (this.activeSort[1] == 1) {
@@ -75,6 +87,12 @@
                 }
 
                 this.sortedRecipes = sorted;
+
+                this.$nextTick(() => {
+                    if (this.lockedData?.slug) {
+                        this.scrollList(this.lockedData?.slug);
+                    }
+                });
             },
             setSelection(newSelection) {
                 let query = {...this.$route}.query;
@@ -95,9 +113,6 @@
                 let isRecipeVisible =
                     rowOffsetTop > scrollDepth &&
                     rowOffsetTop - 50 < scrollDepth + tableHeight;
-
-                console.log(rowOffsetTop, scrollDepth);
-                console.log("visible?:", isRecipeVisible);
 
                 if (!isRecipeVisible) {
                     scrollDiv.scrollTo({
@@ -122,7 +137,13 @@
         },
         mounted() {
             this.sortRecipes();
+            this.$nextTick(() => {
+                if (this.lockedData?.slug) {
+                    this.scrollList(this.lockedData?.slug);
+                }
+            });
         },
+
         watch: {
             lockedData: {
                 deep: true,
@@ -130,6 +151,13 @@
                     if (this.lockedData?.slug) {
                         this.scrollList(this.lockedData?.slug);
                     }
+                },
+            },
+            "selection.chapter": {
+                deep: true,
+                immediate: true,
+                handler() {
+                    this.sortRecipes();
                 },
             },
         },
@@ -173,7 +201,7 @@
                 <div
                     class="table-scroll"
                     ref="table-scroll"
-                    :style="{maxHeight: `${dimensions.boundedHeight}px`}"
+                    :style="{maxHeight: `${dimensions.boundedHeight + 42}px`}"
                 >
                     <div class="table" v-if="sortedRecipes[0]" ref="table">
                         <template
@@ -269,30 +297,6 @@
                 </div>
             </div>
         </div>
-        <!-- <div v-if="lockedData.recipe" class="active-recipe">
-            <div>
-                <Button @click="setLockedRecipe()">
-                    <span class="arrow">&#60;-</span></Button
-                >
-            </div>
-            <h2>
-                {{ processTitle(lockedData.recipe) || "" }}
-            </h2>
-            <div>Level {{ Math.floor(lockedData.difficulty) }}</div>
-            <div>
-                <div>Recipe time: {{ lockedData.minutes }}</div>
-                <div>Page: {{ lockedData.page }}</div>
-            </div>
-            <div v-if="lockedData.video_src">
-                <YouTubeLink
-                    :data="lockedData"
-                    :src="lockedData.video_src"
-                    :thumbnail="lockedData.video_thumbnail"
-                    :title="lockedData.video_title"
-                    :date="lockedData.video_date"
-                />
-            </div>
-        </div> -->
         <div class="decoration">
             <div
                 v-for="tab in [1, 2, 3, 4]"
@@ -312,7 +316,12 @@
         border-radius: var(--border-radius);
         padding-top: 1em;
         color: var(--text-base-color);
+        transition: all 100ms linear;
         //overflow: hidden;
+
+        @media (max-width: 1250px) {
+            max-width: 15em;
+        }
 
         @media (max-width: 1200px) {
             max-width: 14em;
@@ -404,6 +413,10 @@
 
                 &:hover {
                     cursor: pointer;
+
+                    &:hover {
+                        background: rgba($dp-pink-pink, 0.15);
+                    }
                 }
 
                 .youtube-icon {
@@ -420,7 +433,6 @@
 
                 &.active {
                     background: white;
-                    padding-bottom: 0.1em;
 
                     .recipe {
                         font-weight: 600;
@@ -446,7 +458,6 @@
                     font-size: 0.825em;
                     width: 100%;
                     justify-content: space-between;
-                    padding: 0.25em 0 0.5em;
                     color: rgba($dp-dark, 0.75);
                 }
             }
