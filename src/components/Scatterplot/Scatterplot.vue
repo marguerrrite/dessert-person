@@ -32,6 +32,7 @@
                 isLoaded: false,
 
                 dataDots: [],
+                totalDots: [],
                 coordLookup: {},
                 voronoiData: [],
                 voronoiPaths: [],
@@ -65,9 +66,9 @@
                     mins360: 2,
                 },
                 dimensions: {
-                    marginTop: 20,
+                    marginTop: 10,
                     marginRight: 40,
-                    marginBottom: 110,
+                    marginBottom: 125,
                     marginLeft: 70,
                     boundedWidth: 0,
                     boundedHeight: 0,
@@ -82,8 +83,6 @@
                 xScale30mins: scaleLinear(),
                 xScale120mins: scaleLinear(),
                 xScale360mins: scaleLinear(),
-
-                doShowVoronoi: false,
             };
         },
         computed: {
@@ -93,6 +92,7 @@
                 selection: state => state.selection,
                 recipes: state => state.recipes,
                 doShowChapterColors: state => state.doShowChapterColors,
+                doShowVoronoi: state => state.doShowVoronoi,
             }),
             yMax() {
                 return 6;
@@ -157,7 +157,7 @@
                     this.dimensions.marginLeft = 20;
                     this.dimensions.marginBottom = 90;
                 }
-                
+
                 this.$store.commit("setDimensions", this.dimensions);
                 this.setScales();
             },
@@ -197,7 +197,19 @@
                         this.xScales["mins55"](this.minVertRules[2])
                 );
                 this.yArrowOffset = this.xRuleDistance * 3;
-                this.dataDots = this.calculateDotCoords(this.data);
+
+                let data;
+                if (this.selection.chapter) {
+                    data = Object.values(this.data).filter(
+                        recipe =>
+                            utils.slugify(recipe.section) ==
+                            this.selection.chapter
+                    );
+                } else {
+                    data = Object.values(this.data);
+                }
+                this.totalDots = this.calculateDotCoords(this.data);
+                this.dataDots = this.calculateDotCoords(data, true);
                 this.setVoronoiData(this.dataDots);
             },
             setVoronoiData(dots) {
@@ -259,20 +271,9 @@
                 slug = slug.replace(/(?:[^\w-.]+|_+)/g, " ");
                 return slug;
             },
-            calculateDotCoords(fullData) {
-                let data;
+            calculateDotCoords(data, shouldSetCoords) {
                 let dots = [];
                 let coordLookup = {};
-
-                if (this.selection.chapter) {
-                    data = Object.values(fullData).filter(
-                        recipe =>
-                            utils.slugify(recipe.section) ==
-                            this.selection.chapter
-                    );
-                } else {
-                    data = Object.values(fullData);
-                }
 
                 data.forEach(row => {
                     let obj = {
@@ -282,9 +283,16 @@
                         section: utils.slugify(row.section),
                     };
                     dots.push(obj);
-                    coordLookup[this.processTitle(row.recipe)] = obj;
+
+                    if (shouldSetCoords) {
+                        coordLookup[this.processTitle(row.recipe)] = obj;
+                    }
                 });
-                this.coordLookup = coordLookup;
+
+                if (shouldSetCoords) {
+                    this.coordLookup = coordLookup;
+                }
+
                 return dots;
             },
             onHover($event) {
@@ -342,6 +350,12 @@
                     this.$router.push({query});
                 }
             },
+            toggleChapterColors() {
+                this.$store.commit("toggleChapterColors");
+            },
+            toggleVoronoi() {
+                this.$store.commit("toggleVoronoi");
+            },
         },
         watch: {
             dataDots() {
@@ -375,7 +389,6 @@
                         selection["recipe"] = recipe;
 
                         this.$store.dispatch("setLockedData", data);
-                        this.$store.commit("setSelection", selection);
                     } else if (!this.selection.recipe) {
                         // clear
                         this.lockedIndex = "";
@@ -384,8 +397,14 @@
 
                     if (query.chapter) {
                         selection["chapter"] = utils.slugify(query.chapter);
-                        this.$store.commit("setSelection", selection);
                     }
+
+                    if (query.other) {
+                        selection["other"] = query.other;
+                    }
+
+                    this.$store.commit("setSelection", selection);
+
                     this.setScales();
                 },
             },
@@ -421,7 +440,63 @@
 <template>
     <div class="Scatterplot" ref="container">
         <div v-if="!isLoaded">Loading...</div>
-        <h2>Recipe Matrix</h2>
+        <div class="chart-header">
+            <h2>Matrix</h2>
+            <div class="actions">
+                <div class="FilterBar__switch__container">
+                    Chapter colors
+                    <label class="FilterBar__switch">
+                        <input
+                            type="checkbox"
+                            :value="doShowChapterColors"
+                            @change="toggleChapterColors"
+                        />
+                        <div class="FilterBar__slider round"></div>
+                    </label>
+                </div>
+                <div class="FilterBar__switch__container">
+                    <div>
+                        <UiTooltip neon position="bottom">
+                            <template #toggle>Voronoi </template>
+                            <template #contents>
+                                <div>
+                                    <Link
+                                        do-open-in-new-tab
+                                        to="https://en.wikipedia.org/wiki/Voronoi_diagram"
+                                        >From wikipedia:</Link
+                                    >
+                                    <p>
+                                        A Voronoi diagram is a partition of a
+                                        plane into regions close to each of a
+                                        given set of objects.
+                                    </p>
+                                    <p>
+                                        I'm using this figure out the tooltip
+                                        placement.
+                                    </p>
+                                    <p>
+                                        <Link
+                                            do-open-in-new-tab
+                                            to="https://github.com/d3/d3-voronoi"
+                                            >d3-voronoi</Link
+                                        >
+                                    </p>
+                                </div>
+                            </template>
+                        </UiTooltip>
+                    </div>
+                    <label class="FilterBar__switch">
+                        <input
+                            type="checkbox"
+                            :value="doShowVoronoi"
+                            @change="toggleVoronoi"
+                        />
+                        <div class="FilterBar__slider round"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
         <svg
             class="chart"
             :width="dimensions.width"
@@ -464,6 +539,7 @@
                 <Circles
                     v-if="isLoaded"
                     :data="dataDots"
+                    :total-data="totalDots"
                     :dimensions="dimensions"
                 />
                 <g v-if="doShowVoronoi">
@@ -471,8 +547,12 @@
                         v-for="(path, i) in voronoiPaths"
                         :key="path"
                         :d="path.d"
-                        :fillOpacity="hoveredIndex == i ? '0.25' : '0'"
-                        :fill="hoveredIndex == i ? '#da79ae' : 'transparent'"
+                        :fill-opacity="hoveredIndex == i ? '0.25' : '0'"
+                        :fill="
+                            hoveredIndex && hoveredIndex == i
+                                ? '#da79ae'
+                                : 'transparent'
+                        "
                         stroke="#da79ae"
                         :strokeWidth="1"
                     />
@@ -550,12 +630,28 @@
         border: 1em solid var(--background-color);
         border-radius: var(--border-radius);
 
-        @media(max-height: 600px) {
-            max-height: 40vh;
+        @media (max-height: 600px) {
+            max-height: 90vh;
         }
 
-        @media(max-height: 900px) {
+        @media (max-height: 900px) {
             max-height: 50vh;
+        }
+
+        @media (max-height: 1200px) {
+            max-height: 75vh;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+
+            .actions {
+                display: flex;
+                align-items: center;
+                gap: 1em;
+            }
         }
 
         h2 {
@@ -563,6 +659,13 @@
             font-weight: 500;
             font-size: 1em;
             margin: 0;
+            color: $dp-dark;
+
+            font-family: var(--molitor);
+            font-weight: 500;
+            font-size: 1.3em;
+            font-variation-settings: "opsz" 100, "wght" 255;
+            letter-spacing: 0.01em;
 
             span {
                 &._ {
@@ -879,6 +982,78 @@
                 bottom: -3em;
                 top: unset;
                 transform: rotate(-135deg);
+            }
+        }
+
+        .FilterBar {
+            &__switch input {
+                display: none;
+            }
+
+            &__slider {
+                background-color: $dp-taupe;
+                bottom: 0;
+                cursor: pointer;
+                left: 0;
+                position: absolute;
+                right: 0;
+                top: 0;
+                transition: 100ms;
+            }
+
+            &__slider:before {
+                background-color: #fff;
+                bottom: 4px;
+                content: "";
+                height: 19px;
+                left: 4px;
+                position: absolute;
+                transition: 100ms;
+                width: 19px;
+            }
+
+            &__slider.round {
+                border-radius: 34px;
+            }
+
+            &__slider.round:before {
+                border-radius: 20px;
+            }
+
+            &__switch {
+                display: inline-flex;
+                height: 26px;
+                position: relative;
+                width: 40px;
+                transform: scale(0.75) translateY(2px);
+
+                &__container {
+                    display: flex;
+                    align-items: center;
+                    font-size: 0.85rem;
+                    line-height: 1;
+
+                    .toggle {
+                        font-size: 0.85rem;
+                        line-height: 1;
+                        padding-bottom: 3px;
+                    }
+                }
+
+                input:checked + .FilterBar__slider {
+                    background-color: $dp-dark;
+                }
+
+                input:checked + .FilterBar__slider:before {
+                    transform: translateX(12px);
+                }
+            }
+        }
+
+        .UiTooltip {
+            .Tooltip-contents {
+                padding-top: 1em;
+                line-height: 1.3;
             }
         }
     }

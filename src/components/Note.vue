@@ -43,10 +43,42 @@
                 This chart appears at the beginning of the cookbook, showcasing
                 the relationships between recipe difficulty and recipe time.
             </h4>
+            <div class="toggle-neon-separator">&nbsp; &nbsp; &nbsp; &nbsp;</div>
+            <div class="flex-sections">
+                <div class="section">
+                    <h5>Typeface</h5>
+                    <p>
+                        <span>Molitor Variable Italic by</span> <Link to="https://www.205.tf/molitor" do-open-in-new-tab
+                            >205TF</Link
+                        >
+                    </p>
+                </div>
+                <div class="section">
+                    <h5>Project code</h5>
+                    <p>
+                        <Link
+                            to="https://github.com/margueriteroth/dessert-person"
+                            do-open-in-new-tab
+                        >
+                            Github
+                        </Link>
+                    </p>
+                </div>
+            </div>
+            <div class="actions">
+                <Button class="Note__button" @click="setHasSeenNote">
+                    Got it!
+                </Button>
+                <div class="signoff">
+                    <p>
+                        <div>— Marguerite</div>
+                    <Link to="https://marguerite.io" do-open-in-new-tab>
+                        marguerite.io
+                    </Link>
+                    </p>
+                </div>
+            </div>
 
-            <Button class="Note__button" @click="setHasSeenNote">
-                Got it!
-            </Button>
             <div class="Note__mute">And mute note for 15 days</div>
         </div>
     </div>
@@ -72,7 +104,7 @@
             }
         }
 
-        max-width: 900px;
+        max-width: 800px;
         min-height: 500px;
         width: 100%;
         border: 1px solid;
@@ -98,7 +130,7 @@
         }
 
         h2 {
-            margin-bottom: 2.5em;
+            //margin-bottom: 2.5em;
             line-height: 1.2;
         }
 
@@ -119,7 +151,7 @@
         }
 
         h4 {
-            line-height: 1.3;
+            line-height: 1.6;
 
             i {
                 text-decoration: underline;
@@ -142,6 +174,44 @@
             margin-top: 2em;
         }
 
+        .flex-sections {
+            display: flex;
+            gap: 2.7rem;
+        }
+
+        .actions {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+        }
+
+        .signoff {
+            h5 {
+                margin: 0;
+            }
+
+            .Link {
+                font-size: 0.85em;
+                margin-left: 1.4em;
+            }
+
+            p {
+                font-size: 0.875em;
+            }
+        }
+
+        .section {
+            padding-top: 1em;
+
+            h5 {
+                margin: 0;
+            }
+
+            p {
+                font-size: 0.875em;
+            }
+        }
+
         .button {
             width: 100%;
             padding: 1em 0;
@@ -158,6 +228,14 @@
             //text-align: right;
             font-size: 0.7em;
             opacity: 0.7;
+        }
+
+        .toggle-neon-separator {
+            text-decoration-line: underline;
+            text-decoration-style: wavy;
+            text-underline-offset: 2px;
+            text-decoration-thickness: 2px;
+            text-decoration-color: var(--neon-green-300);
         }
     }
 </style>

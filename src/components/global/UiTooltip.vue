@@ -12,7 +12,7 @@
             },
             position: {
                 type: [Array, String],
-                default: ["top", "center"], // does nuthin yet
+                default: ["top", "center", "bottom"], // does nuthin yet
             },
             gradient: {
                 type: Boolean,
@@ -71,6 +71,10 @@
                         toggleRef.getBoundingClientRect().left +
                         toggleRef.getBoundingClientRect().width / 2 -
                         tooltipContents.getBoundingClientRect().width / 2;
+
+                    if (this.position == "bottom") {
+                        this.topOffset = toggleRef.getBoundingClientRect().height + 10;
+                    }
                 } else {
                     this.topOffset = 0;
                     this.leftOffset = 0;
@@ -100,7 +104,7 @@
             class="Tooltip-contents"
             :style="{
                 display: isHovered || isLocked ? 'block' : 'none',
-                transform: `translate(0%, -110%)`,
+                transform: `translate(0%, ${topOffset}px)`,
                 opacity: isHovered || isLocked ? 1 : 0,
             }"
         >

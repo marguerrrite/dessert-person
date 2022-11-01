@@ -24,6 +24,7 @@ const store = createStore({
             },
             dimensions: {},
             doShowChapterColors: false,
+            doShowVoronoi: false,
 
             chapterColors: {},
         };
@@ -35,6 +36,9 @@ const store = createStore({
         },
         toggleChapterColors(state) {
             state.doShowChapterColors = !state.doShowChapterColors;
+        },
+        toggleVoronoi(state) {
+            state.doShowVoronoi = !state.doShowVoronoi;
         },
         setDimensions(state, dimnsions) {
             state.dimensions = dimnsions;

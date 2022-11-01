@@ -122,35 +122,31 @@
 
         {/* Real fake Y axis */}
         <g>
-            {/* Vert Arrow Left */}
             <g :style="{transform: `translate(0, ${yArrowOffset})px`}">
+                {/* Vert Arrow Left */}
                 <line
-                    :x1="-xRuleDistance - 2"
-                    :x2="-xRuleDistance * 1.5 - 2"
-                    :y1="-dimensions.boundedHeight - yArrowOffset"
-                    :y2="
-                        -dimensions.boundedHeight + arrowSize - yArrowOffset + 2
-                    "
+                    :x1="-xRuleDistance - 1"
+                    :y1="-dimensions.boundedHeight"
+                    :x2="-xRuleDistance* 1.7"
+                    :y2="-dimensions.boundedHeight + arrowSize * 2 - 2"
                     class="Axis__arrow Axis__line Axis__line--left vert"
                 />
 
                 {/* Vert Arrow Right */}
                 <line
-                    :x1="-xRuleDistance - 2"
-                    :x2="-xRuleDistance / 2 - 2"
-                    :y1="-dimensions.boundedHeight - yArrowOffset"
-                    :y2="
-                        -dimensions.boundedHeight + arrowSize - yArrowOffset + 2
-                    "
-                    class="Axis__arrow Axis__line Axis__line--right vert"
+                    :x1="-xRuleDistance - 3"
+                    :y1="-dimensions.boundedHeight"
+                    :x2="-arrowSize"
+                    :y2="-dimensions.boundedHeight + arrowSize * 2 -2"
+                    class="Axis__arrow Axis__line Axis__line--left vert"
                 />
             </g>
             <line
                 class="Axis__line"
-                :y1="-dimensions.boundedHeight - yArrowOffset - 2"
-                :y2="2"
                 :x1="-xRuleDistance - 2"
+                :y1="-dimensions.boundedHeight"
                 :x2="-xRuleDistance - 2"
+                :y2="2.5"
             />
         </g>
 
@@ -297,7 +293,7 @@
             class="Axis__tick Axis__tick--difficulty"
             :style="{
                 transform: `translate(
-                            ${-xRuleDistance - (dimensions.marginLeft/2) + 5}px,
+                            ${-xRuleDistance - dimensions.marginLeft / 2 + 5}px,
                             ${
                                 scale(tick) +
                                 3 -
@@ -306,16 +302,15 @@
                     `,
             }"
         >
-            {{ tick == 1 ? '' :  tick - 1}}
+            {{ tick == 1 ? "" : tick - 1 }}
         </text>
 
-     
         {/* "Difficulty" label */}
         <g
             class="Axis__label__wrapper"
             :style="{
                 transform: `translate(${-xscales.mins55(minrules[1])}px, ${
-                    dimensions.boundedHeight - (yRuleDistance)
+                    dimensions.boundedHeight - yRuleDistance
                 }px) rotate(-90deg)`,
             }"
         >

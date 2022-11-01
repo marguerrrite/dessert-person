@@ -54,16 +54,23 @@
         url("/fonts/NaNJauneTRIAL-MidiBlack.woff2") format("woff2");
 }
 
+// @font-face {
+//     font-family: "Molitor";
+//     font-weight: 500;
+//     font-style: italic;
+//     font-display: auto;
+//     unicode-range: U+000-5FF;
+//     src: local("Juane"),
+//         url("/fonts/Molitor+-+Display+Italic-205TF.woff2") format('woff2-variations');
+// }
+
 @font-face {
-    font-family: "Molitor";
-    font-weight: 500;
-    font-style: italic;
-    font-display: auto;
-    unicode-range: U+000-5FF;
-    src: local("Juane"),
-        url("/fonts/Molitor+-+Display+Italic-205TF.woff2") format("woff2");
+	src: url('/fonts/MolitorVariableItalic-Trial.woff2') format('woff2-variations');
+	font-family:'Molitor Variable';
+	font-style: italic;
 }
 
 :root {
-    --juane: Molitor, "Inter", sans-serif;
+    --juane: Juane, "Inter", sans-serif;
+    --molitor: Molitor Variable, "Inter", sans-serif;
 }

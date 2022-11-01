@@ -59,6 +59,12 @@
             <div class="title">
                 {{ title }}
             </div>
+            <div class="info">
+                Level {{ Math.floor(data.difficulty) }}
+            </div>
+            <div class="info">
+                Page {{ data.page }}
+            </div>
         </div>
     </div>
 </template>
@@ -91,6 +97,12 @@
             font-size: 0.8em;
             font-weight: 600;
             color: white;
+        }
+
+        .info {
+            font-size: 0.75em;
+            color: white;
+            opacity: 0.7;
         }
     }
 </style>

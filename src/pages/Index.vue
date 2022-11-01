@@ -41,7 +41,7 @@
     <MaxWidth class="Index" size="l" v-if="isLoaded">
         <div class="metas">
             <div>
-                <h1>Dessert Person</h1>
+                <DessertPersonTitle />
                 <div>
                     Cookbook by Clare Saffitz / Book & Infographic designed by
                     Mia Hammond
@@ -84,14 +84,11 @@
             justify-content: space-between;
             align-items: start;
 
-            h1 {
-                font-family: var(--juane);
-                letter-spacing: 0.05em;
-                font-weight: 600;
-                font-size: 2.7em;
-                color: var(--background-color);
-                margin: 0.25em 0;
+            @media (max-width: 600px) {
+                align-items: end;
             }
+
+            
         }
 
         .note-btn {
@@ -104,9 +101,14 @@
             font-size: 0.9em;
             opacity: 0.7;
             transition: all 100ms linear;
+            white-space: nowrap;
+
+            @media (max-width: 600px) {
+                padding-bottom: 0.25em;
+            }
 
             &:hover {
-                opacity:1;
+                opacity: 1;
                 transition: all 100ms linear;
             }
         }

@@ -100,11 +100,16 @@
                 this.$router.push({query});
             },
             scrollList(recipe) {
+                let scrollDiv = this.$refs["table-scroll"];
+
                 if (!recipe) {
+                    scrollDiv.scrollTo({
+                        top: 0,
+                        behavior: "smooth",
+                        duration: 100,
+                    });
                     return;
                 }
-
-                let scrollDiv = this.$refs["table-scroll"];
 
                 let scrollDepth = scrollDiv.scrollTop;
                 let rowHeight = this.$refs[recipe][0]?.clientHeight
@@ -119,9 +124,9 @@
                     rowOffsetTop > scrollDepth &&
                     rowOffsetTop - 50 < scrollDepth + tableHeight;
 
-                let additionalOffset = 70
+                let additionalOffset = 70;
                 if (window.screen.width < 601) {
-                    additionalOffset =10;
+                    additionalOffset = 10;
                 }
 
                 if (!isRecipeVisible) {
@@ -144,6 +149,10 @@
                     hours == 1 ? "hour" : "hours"
                 } ${min} minutes`;
             },
+            clearAll() {
+                this.$router.push({});
+                this.$store.commit("setSelection", {});
+            },
         },
         mounted() {
             this.sortRecipes();
@@ -160,6 +169,8 @@
                 handler() {
                     if (this.lockedData?.slug) {
                         this.scrollList(this.lockedData?.slug);
+                    } else {
+                        this.scrollList();
                     }
                 },
             },
@@ -212,7 +223,7 @@
                 <div
                     class="table-scroll"
                     ref="table-scroll"
-                    :style="{maxHeight: `${dimensions.boundedHeight + 42}px`}"
+                    :style="{maxHeight: `${dimensions.boundedHeight + 20}px`}"
                 >
                     <div class="table" v-if="sortedRecipes[0]" ref="table">
                         <template
@@ -285,7 +296,9 @@
                                         class="FilterBar__button__dot"
                                         :style="{
                                             background:
-                                                chapterColors[slugify(lockedData.section)],
+                                                chapterColors[
+                                                    slugify(lockedData.section)
+                                                ],
                                         }"
                                     ></div>
                                     <div>
@@ -312,6 +325,9 @@
                                 />
                             </div>
                         </template>
+                        <div v-if="selection.recipe">
+                            <div @click="clearAll()">Clear all</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -350,18 +366,12 @@
             max-width: 100%;
         }
 
-        @media(max-width: 600px) {
+        @media (max-width: 600px) {
             max-height: 500px;
         }
 
-        h2 {
-            font-family: var(--juane);
-            font-weight: 500;
-            font-size: 1.3em;
-
-            @media(max-width: 600px) {
-                display: none;
-            }
+        @media (min-width: 1250px) {
+            wax-width: 100%;
         }
 
         .active-recipe {
@@ -381,10 +391,17 @@
         .recipe-list-container {
             h2 {
                 text-align: center;
-                text-orientation: sideways;
-                color: $dp-pink-pink;
                 margin: 0 0 1em;
-                opacity: 0.5;
+                color: $dp-dark;
+
+                font-family: var(--molitor);
+                font-weight: 500;
+                font-size: 1.3em;
+                font-variation-settings: "opsz" 100, "wght" 255;
+
+                @media (max-width: 600px) {
+                    display: none;
+                }
             }
 
             .table-scroll {
@@ -397,9 +414,8 @@
                 flex-direction: column;
                 height: 100%;
 
-                @media(max-width: 600px) {
+                @media (max-width: 600px) {
                     max-height: 23vh;
-
                 }
 
                 .right-align {
