@@ -20,6 +20,7 @@
                 recipes: state => state.recipes,
                 selection: state => state.selection,
                 dimensions: state => state.dimensions,
+                chapterColors: state => state.chapterColors,
             }),
         },
         methods: {
@@ -102,11 +103,13 @@
                 if (!recipe) {
                     return;
                 }
-                    
+
                 let scrollDiv = this.$refs["table-scroll"];
 
                 let scrollDepth = scrollDiv.scrollTop;
-                let rowHeight = this.$refs[recipe][0]?.clientHeight ? this.$refs[recipe][0]?.clientHeight : 0;
+                let rowHeight = this.$refs[recipe][0]?.clientHeight
+                    ? this.$refs[recipe][0]?.clientHeight
+                    : 0;
                 let rowOffsetTop = this.$refs[recipe][0]?.offsetTop - rowHeight;
 
                 let tableHeight =
@@ -170,14 +173,15 @@
     <div class="Recipe">
         <div class="recipe-list-container">
             <h2>
-                <span
+                <!-- <span
                     class="letter-rotate"
                     v-for="letter in 'Recipes'.split('')"
                     :style="{opacity: letter == '_' ? 0 : 1}"
                     :key="letter"
                 >
                     {{ letter }}
-                </span>
+                </span> -->
+                Recipes
             </h2>
             <div class="table-container" ref="table-container">
                 <div class="table-header">
@@ -228,6 +232,7 @@
                                     <div
                                         class="youtube-icon"
                                         v-if="recipe.video_src"
+                                        title="Has a YouTube video!"
                                     >
                                         <svg
                                             width="20"
@@ -271,6 +276,13 @@
                                 v-if="selection?.recipe == recipe.slug"
                             >
                                 <div class="info">
+                                    <div
+                                        class="FilterBar__button__dot"
+                                        :style="{
+                                            background:
+                                                chapterColors[slugify(lockedData.section)],
+                                        }"
+                                    ></div>
                                     <div>
                                         {{ lockedData.section }}
                                     </div>
@@ -459,8 +471,13 @@
                     display: flex;
                     font-size: 0.825em;
                     width: 100%;
-                    justify-content: space-between;
+                    justify-content: flex-start;
+                    align-items: baseline;
                     color: rgba($dp-dark, 0.75);
+                }
+
+                .YouTubeLink {
+                    margin-top: 0.5em;
                 }
             }
 

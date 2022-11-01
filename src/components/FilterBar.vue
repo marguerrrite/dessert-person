@@ -63,16 +63,14 @@
             },
             setExtra(extra) {
                 let query = {...this.$route.query};
-
-
-            },  
+            },
             toggleChapterColors() {
                 this.$store.commit("toggleChapterColors");
             },
             clearAll() {
                 this.$router.push({});
                 this.$store.commit("setSelection", {});
-            }
+            },
         },
         watch: {},
     };
@@ -142,9 +140,55 @@
                     <!-- <button class="FilterBar__button">
                         Recipes I've Made!
                     </button> -->
+                    <div>
+                        <UiTooltip>
+                            <template #toggle
+                                ><svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 16 16"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        clip-rule="evenodd"
+                                        d="M8 0C3.58 0 0 3.58 0 8C0 12.42 3.58 16 8 16C12.42 16 16 12.42 16 8C16 3.58 12.42 0 8 0ZM9 12.5C9 12.78 8.78 13 8.5 13H7.5C7.22 13 7 12.78 7 12.5V11.5C7 11.22 7.22 11 7.5 11H8.5C8.78 11 9 11.22 9 11.5V12.5ZM9 9.5V8.83C10.16 8.42 11 7.3 11 6C11 4.35 9.65 3 8 3C6.51 3 5.28 4.08 5.04 5.5C5 5.78 5.12 6 5.5 6H6.5C6.91 6 7 5.64 7 5.5C7 5.22 7.22 5 7.5 5H8.5C8.78 5 9 5.22 9 5.5V6.5C9 6.78 8.78 7 8.5 7H7.75C7.12 7 7 7.45 7 8V9.5C7 9.78 7.22 10 7.5 10H8.5C8.78 10 9 9.78 9 9.5Z"
+                                        fill="#17171B"
+                                    />
+                                </svg>
+                            </template>
+                            <template #contents>
+                                <div>
+                                    <Link
+                                        do-open-in-new-tab
+                                        to="https://en.wikipedia.org/wiki/Voronoi_diagram"
+                                        >From wikipedia:</Link
+                                    >
+                                    <p>
+                                        A Voronoi diagram is a partition of a
+                                        plane into regions close to each of a
+                                        given set of objects.
+                                    </p>
+                                    <p>
+                                        I'm using this figure out the tooltip
+                                        placement.
+                                    </p>
+                                    <p>
+                                        <Link
+                                            do-open-in-new-tab
+                                            to="https://github.com/d3/d3-voronoi"
+                                            >d3-voronoi</Link
+                                        >
+                                    </p>
+                                </div>
+                            </template>
+                        </UiTooltip>
+                    </div>
                     <button class="FilterBar__button">Voronoi Diagram</button>
-                    <button @click="clearAll" class="FilterBar__button clear">Clear all</button>
-
+                    <button @click="clearAll" class="FilterBar__button clear">
+                        Clear all
+                    </button>
 
                     <!-- <Tooltip class="FilterBar__tooltip">
                                 <FontAwesomeIcon class="FilterBar__item__icon" icon={faQuestionCircle} />
@@ -236,7 +280,6 @@
             }
 
             &.active {
-
                 &:hover {
                     background: $dp-pink;
                     border-color: $dp-pink;

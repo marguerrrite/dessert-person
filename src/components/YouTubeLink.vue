@@ -37,7 +37,7 @@
 </script>
 
 <template>
-    <Link class="YouTubeLink" do-open-in-new-tab :to="src">
+    <Link class="YouTubeLink" do-open-in-new-tab :to="src" :title="title">
         <div class="image-container">
             <img :src="thumbnail" :alt="`${data.recipe} YouTube still.`" />
             <div class="youtube-icon">
