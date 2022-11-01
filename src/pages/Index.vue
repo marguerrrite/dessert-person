@@ -47,7 +47,9 @@
                     Mia Hammond
                 </div>
             </div>
-            <Button @click="toggleNote" class="note-btn"> See Note </Button>
+            <div class="col">
+                <Button @click="toggleNote" class="note-btn"> See Note </Button>
+            </div>
         </div>
         <div class="flex">
             <Scatterplot ref="plot" />
@@ -82,13 +84,15 @@
             z-index: 10;
             display: flex;
             justify-content: space-between;
-            align-items: start;
+            align-items: end;
 
             @media (max-width: 600px) {
                 align-items: end;
             }
 
-            
+            .col {
+                padding-bottom: 0.5em;
+            }
         }
 
         .note-btn {
