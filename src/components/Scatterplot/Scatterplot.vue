@@ -200,7 +200,7 @@
                     d => d.x,
                     d => d.y
                 );
-                let filteredDots = dots;
+
                 let voronoi = delaunay.voronoi([
                     0,
                     0,
@@ -253,15 +253,27 @@
                 slug = slug.replace(/(?:[^\w-.]+|_+)/g, " ");
                 return slug;
             },
-            calculateDotCoords(data) {
+            calculateDotCoords(fullData) {
+                let data;
                 let dots = [];
                 let coordLookup = {};
+
+                if (this.selection.chapter) {
+                    data = Object.values(fullData).filter(
+                        recipe =>
+                            utils.slugify(recipe.section) ==
+                            this.selection.chapter
+                    );
+                } else {
+                    data = Object.values(fullData);
+                }
+
                 data.forEach(row => {
                     let obj = {
                         x: this.xAccessorScaled(row),
                         y: this.yAccessorScaled(row),
                         title: row.recipe,
-                        section: utils.slugify(row.section)
+                        section: utils.slugify(row.section),
                     };
                     dots.push(obj);
                     coordLookup[this.processTitle(row.recipe)] = obj;
@@ -288,7 +300,17 @@
                 this.currentHoveredCol = currentCol;
                 let correctXScale = this.getXScale(x);
                 let closestIndex = this.voronoiData.voronoi.delaunay.find(x, y);
-                let closestDataPoint = this.data[closestIndex];
+
+                let data = this.data;
+                if (this.selection.chapter) {
+                    data = data.filter(
+                        row =>
+                            utils.slugify(row.section) == this.selection.chapter
+                    );
+                }
+
+                let closestDataPoint = data[closestIndex];
+
                 let hoveredData = closestDataPoint;
                 let hoveredCoords = this.dataDots[closestIndex];
                 this.hoveredIndex = closestIndex;
@@ -358,6 +380,7 @@
                         selection["chapter"] = utils.slugify(query.chapter);
                         this.$store.commit("setSelection", selection);
                     }
+                    this.setScales();
                 },
             },
 
@@ -437,7 +460,7 @@
                     :data="dataDots"
                     :dimensions="dimensions"
                 />
-                <g v-if="doShowVoronoi">
+                <g v-if="!doShowVoronoi">
                     <path
                         v-for="(path, i) in voronoiPaths"
                         :key="path"
@@ -515,15 +538,14 @@
     .Scatterplot {
         position: relative;
         height: 100%;
-        max-height: 600px;
+        max-height: 80vh;
         width: 100%;
-        //background: #383735;
         background: var(--background-color);
         border: 1em solid var(--background-color);
         border-radius: var(--border-radius);
 
-        @media (max-height: 1600px) {
-            max-height: 600px;
+        @media(max-height: 900px) {
+            max-height: 50vh;
         }
 
         h2 {

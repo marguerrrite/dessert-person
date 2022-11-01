@@ -52,8 +52,6 @@
             sortRecipes() {
                 let sorted;
 
-                console.log(this.selection)
-
                 if (this.selection.chapter) {
                     sorted = Object.values(this.recipes).filter(
                         recipe =>
@@ -101,11 +99,15 @@
                 this.$router.push({query});
             },
             scrollList(recipe) {
+                if (!recipe) {
+                    return;
+                }
+                    
                 let scrollDiv = this.$refs["table-scroll"];
 
                 let scrollDepth = scrollDiv.scrollTop;
-                let rowHeight = this.$refs[recipe][0].clientHeight;
-                let rowOffsetTop = this.$refs[recipe][0].offsetTop - rowHeight;
+                let rowHeight = this.$refs[recipe][0]?.clientHeight ? this.$refs[recipe][0]?.clientHeight : 0;
+                let rowOffsetTop = this.$refs[recipe][0]?.offsetTop - rowHeight;
 
                 let tableHeight =
                     this.$refs["table-container"].clientHeight * 0.85;

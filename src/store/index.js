@@ -63,12 +63,12 @@ const store = createStore({
                 ...new Set(data.map(row => utils.slugify(row.section))),
             ];
             let colors = [
-                "#84B5FF",
-                "#FFCE9C",
-                "#7BEFB5",
-                "#A5A5F7",
-                "#FFA5D6",
-                "#FFEF8C",
+                "#56CCF2",
+                "#F2C94C",
+                "#6FCF97",
+                "#827AE8",
+                "#BB6BD9",
+                "#EB5757",
                 "#BDEFFF",
             ];
             let chapterColors = {};

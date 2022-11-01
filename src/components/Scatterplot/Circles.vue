@@ -43,7 +43,7 @@
             :fill="doShowChapterColors && chapterColors[d.section]"
         />
         <text
-            :class="{flip: d.x > dimensions.boundedWidth * 0.85}"
+            :class="{flip: d.x > dimensions.boundedWidth * 0.85, large: selection.chapter}"
             class="dot-title"
             v-for="d in data"
             :key="d"
@@ -65,6 +65,10 @@
 
         &.flip {
             text-anchor: end;
+        }
+
+        &.large {
+            font-size: 0.7rem;
         }
     }
 </style>

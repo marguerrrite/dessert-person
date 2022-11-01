@@ -61,9 +61,18 @@
                 this.$router.push({query});
                 this.$store.commit("setSelection", newSelection);
             },
+            setExtra(extra) {
+                let query = {...this.$route.query};
+
+
+            },  
             toggleChapterColors() {
                 this.$store.commit("toggleChapterColors");
             },
+            clearAll() {
+                this.$router.push({});
+                this.$store.commit("setSelection", {});
+            }
         },
         watch: {},
     };
@@ -130,10 +139,12 @@
             <div class="FilterBar__extra">
                 <div class="FilterBar__item" v-if="shouldShowExtra">
                     <button class="FilterBar__button">YouTube</button>
-                    <button class="FilterBar__button">
+                    <!-- <button class="FilterBar__button">
                         Recipes I've Made!
-                    </button>
+                    </button> -->
                     <button class="FilterBar__button">Voronoi Diagram</button>
+                    <button @click="clearAll" class="FilterBar__button clear">Clear all</button>
+
 
                     <!-- <Tooltip class="FilterBar__tooltip">
                                 <FontAwesomeIcon class="FilterBar__item__icon" icon={faQuestionCircle} />
@@ -225,8 +236,6 @@
             }
 
             &.active {
-                background: $dp-pink;
-                border-color: $dp-pink;
 
                 &:hover {
                     background: $dp-pink;
@@ -327,6 +336,7 @@
         &__main {
             display: flex;
             flex-wrap: wrap;
+            align-items: flex-start;
 
             .FilterBar__button {
                 margin-right: 0.75em;
@@ -337,6 +347,7 @@
         &__extra {
             display: flex;
             flex-wrap: wrap;
+            align-items: start;
 
             .FilterBar__button {
                 margin-right: 0.75em;
