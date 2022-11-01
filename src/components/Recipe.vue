@@ -119,9 +119,14 @@
                     rowOffsetTop > scrollDepth &&
                     rowOffsetTop - 50 < scrollDepth + tableHeight;
 
+                let additionalOffset = 70
+                if (window.screen.width < 601) {
+                    additionalOffset =10;
+                }
+
                 if (!isRecipeVisible) {
                     scrollDiv.scrollTo({
-                        top: rowOffsetTop - 70,
+                        top: rowOffsetTop - additionalOffset,
                         behavior: "smooth",
                         duration: 100,
                     });

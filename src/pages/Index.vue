@@ -40,12 +40,14 @@
 <template>
     <MaxWidth class="Index" size="l" v-if="isLoaded">
         <div class="metas">
-            <h1>Dessert Person</h1>
             <div>
-                Cookbook by Clare Saffitz / Book & Infographic designed by Mia
-                Hammond
+                <h1>Dessert Person</h1>
+                <div>
+                    Cookbook by Clare Saffitz / Book & Infographic designed by
+                    Mia Hammond
+                </div>
             </div>
-            <!-- <button @click="toggleNote">See Note</button> -->
+            <Button @click="toggleNote" class="note-btn"> See Note </Button>
         </div>
         <div class="flex">
             <Scatterplot ref="plot" />
@@ -69,7 +71,7 @@
         height: 100vh;
         max-height: 2000px;
 
-        @media(max-width: 600px) {
+        @media (max-width: 600px) {
             padding: 0 1em;
         }
 
@@ -78,6 +80,9 @@
             color: var(--background-color);
             position: relative;
             z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
 
             h1 {
                 font-family: var(--juane);
@@ -86,6 +91,23 @@
                 font-size: 2.7em;
                 color: var(--background-color);
                 margin: 0.25em 0;
+            }
+        }
+
+        .note-btn {
+            font-weight: 500;
+            background: $dp-pink;
+            border: 1px solid darken($dp-pink, 20%);
+            color: white;
+            border-radius: 2px;
+            color: $dp-dark;
+            font-size: 0.9em;
+            opacity: 0.7;
+            transition: all 100ms linear;
+
+            &:hover {
+                opacity:1;
+                transition: all 100ms linear;
             }
         }
 
