@@ -63,6 +63,7 @@
             },
             setExtra(extra) {
                 let query = {...this.$route.query};
+                let newSelection = {...this.selection};
             },
             toggleChapterColors() {
                 this.$store.commit("toggleChapterColors");
@@ -217,17 +218,29 @@
         //background: rgba(white, 0.5);
         padding: 0 1em;
 
+        @media (max-width: 600px) {
+            display: none;
+        }
+
         &__controls,
         &__content {
             display: grid;
             grid-template-columns: 1fr 24em;
             grid-gap: 3.5em;
+
+            @media (max-width: 600px) {
+                display: none;
+            }
         }
 
         &__controls {
             &--chapters {
                 display: flex;
                 justify-content: space-between;
+            }
+
+            @media (max-width: 600px) {
+                display: none;
             }
         }
 

@@ -345,10 +345,18 @@
             max-width: 100%;
         }
 
+        @media(max-width: 600px) {
+            max-height: 500px;
+        }
+
         h2 {
             font-family: var(--juane);
             font-weight: 500;
             font-size: 1.3em;
+
+            @media(max-width: 600px) {
+                display: none;
+            }
         }
 
         .active-recipe {
@@ -383,6 +391,11 @@
                 display: flex;
                 flex-direction: column;
                 height: 100%;
+
+                @media(max-width: 600px) {
+                    max-height: 23vh;
+
+                }
 
                 .right-align {
                     text-align: right;

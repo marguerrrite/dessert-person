@@ -152,6 +152,12 @@
                         (a, b) => a + b,
                         0
                     );
+
+                if (window.screen.width < 601) {
+                    this.dimensions.marginLeft = 20;
+                    this.dimensions.marginBottom = 90;
+                }
+                
                 this.$store.commit("setDimensions", this.dimensions);
                 this.setScales();
             },
@@ -460,7 +466,7 @@
                     :data="dataDots"
                     :dimensions="dimensions"
                 />
-                <g v-if="!doShowVoronoi">
+                <g v-if="doShowVoronoi">
                     <path
                         v-for="(path, i) in voronoiPaths"
                         :key="path"
@@ -544,6 +550,10 @@
         border: 1em solid var(--background-color);
         border-radius: var(--border-radius);
 
+        @media(max-height: 600px) {
+            max-height: 40vh;
+        }
+
         @media(max-height: 900px) {
             max-height: 50vh;
         }
@@ -584,7 +594,6 @@
         }
 
         height: calc(90vh - 6em);
-        min-height: 520px;
         min-width: 300px;
         max-width: 1700px;
         width: calc(100% + 1em);

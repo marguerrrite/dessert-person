@@ -67,8 +67,16 @@
             text-anchor: end;
         }
 
+        @media(max-width: 600px) {
+            display: none;
+        }
+
         &.large {
             font-size: 0.7rem;
+
+            @media(max-width: 600px) {
+            display: block;
+        }
         }
     }
 </style>

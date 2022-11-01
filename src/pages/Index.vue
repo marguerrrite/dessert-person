@@ -69,6 +69,10 @@
         height: 100vh;
         max-height: 2000px;
 
+        @media(max-width: 600px) {
+            padding: 0 1em;
+        }
+
         .metas {
             padding: 1em 0;
             color: var(--background-color);
@@ -94,6 +98,10 @@
             @media (max-width: 900px) {
                 flex-direction: column;
             }
+
+            @media (max-width: 600px) {
+                gap: 1em;
+            }
         }
 
         img {
@@ -107,10 +115,6 @@
         .FilterBar {
             position: relative;
             z-index: 10;
-        }
-
-        @media (max-width: 600px) {
-            padding-top: 6em;
         }
     }
 </style>
