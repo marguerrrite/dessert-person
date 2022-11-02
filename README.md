@@ -1,10 +1,18 @@
 # Dessert Person v2
 
 Interactive recipe scatterplot
+WIP demo: musical-frangipane-aceb2e.netlify.app
+
+Pull repo, install node dependencies.
 
 ```
 npm run dessertperson
 ```
+
+
+tech: 
+- vue
+- d3
 
 ---
 
