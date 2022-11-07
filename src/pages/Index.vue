@@ -44,7 +44,7 @@
                 <DessertPersonTitle />
                 <div>
                     Cookbook by Clare Saffitz / Book & Infographic designed by
-                    Mia Hammond
+                    Mia Johnson
                 </div>
             </div>
             <div class="col">
