@@ -67,7 +67,7 @@
         height: 100%;
         padding-top: 0em;
         position: relative;
-        background: url("/images/background-marble-06.png");
+        background: url("/images/background-marble-03.jpg");
         background-repeat: no-repeat;
         background-size: cover;
         height: 100vh;
