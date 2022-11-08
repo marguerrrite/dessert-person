@@ -54,6 +54,12 @@
                     </p>
                 </div>
                 <div class="section">
+                    <h5>Publisher</h5>
+                    <p>
+                        Clarkson Potter
+                    </p>
+                </div>
+                <div class="section">
                     <h5>Project code</h5>
                     <p>
                         <Link
