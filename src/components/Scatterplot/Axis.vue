@@ -178,7 +178,8 @@
 
         <line
             v-if="isLoaded"
-            v-for="tick in minuteSections"
+            v-for="(tick, i) in minuteSections"
+            :style="{opacity: dimensions.boundedWidth < 1200 && i % 2 == 0 ? 0 : 1}"
             :key="tick"
             :class="tick == 5 ? `Grid__rules` : `Grid__section-delineator`"
             :y1="-dimensions.boundedHeight"
@@ -216,9 +217,10 @@
                         ? xscales.mins120(tick) + dimensions.sectionWidth * 7
                         : xscales.mins360(tick) + dimensions.sectionWidth * 8
                 }px, ${xTickOffset}px)`,
+                opacity: dimensions.boundedWidth < 1200 && i % 2 == 0 ? 0 : 1
             }"
         >
-            <text :style="{transform: `translate(5px, 0)`}" class="Axis__tick">
+            <text :style="{transform: `translate(5px, 0)`}" class="Axis__tick x-tick">
                 {{ hourLabels[i] }}
                 <template v-if="hourLabels[i] == 5">
                     {{ ` min` }}
@@ -247,7 +249,7 @@
                 :style="{
                     transform: `translate(5px, 0px)`,
                 }"
-                class="Axis__label"
+                class="Axis__label x-axis"
             >
                 {{ label }}
             </text>
@@ -293,13 +295,13 @@
             class="Axis__tick Axis__tick--difficulty"
             :style="{
                 transform: `translate(
-                            ${-xRuleDistance - dimensions.marginLeft / 2 + 5}px,
-                            ${
-                                scale(tick) +
-                                3 -
-                                (scale(ticks[0]) - scale(ticks[1])) / 2
-                            }px)
-                    `,
+                        ${-xRuleDistance - dimensions.marginLeft / 2 + 5}px,
+                        ${
+                            scale(tick) +
+                            3 -
+                            (scale(ticks[0]) - scale(ticks[1])) / 2
+                        }px)
+                `,
             }"
         >
             {{ tick == 1 ? "" : tick - 1 }}
