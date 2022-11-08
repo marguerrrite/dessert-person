@@ -179,7 +179,7 @@
         <line
             v-if="isLoaded"
             v-for="(tick, i) in minuteSections"
-            :style="{opacity: dimensions.boundedWidth < 1200 && i % 2 == 0 ? 0 : 1}"
+            :style="{opacity: dimensions.boundedWidth < 900 && i % 2 == 0 ? 0 : 1}"
             :key="tick"
             :class="tick == 5 ? `Grid__rules` : `Grid__section-delineator`"
             :y1="-dimensions.boundedHeight"
@@ -217,7 +217,7 @@
                         ? xscales.mins120(tick) + dimensions.sectionWidth * 7
                         : xscales.mins360(tick) + dimensions.sectionWidth * 8
                 }px, ${xTickOffset}px)`,
-                opacity: dimensions.boundedWidth < 1200 && i % 2 == 0 ? 0 : 1
+                opacity: dimensions.boundedWidth < 900 && i % 2 == 0 ? 0 : 1
             }"
         >
             <text :style="{transform: `translate(5px, 0)`}" class="Axis__tick x-tick">
