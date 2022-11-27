@@ -27,7 +27,7 @@
             font-family: var(--molitor);
             letter-spacing: 0.05em;
             font-weight: 600;
-            font-size: 4em;
+            font-size: 3.5em;
             color: var(--background-color);
             margin: 0.25em 0;
             font-variation-settings: "opsz" 100, "wght" 230;
