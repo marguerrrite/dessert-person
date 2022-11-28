@@ -1,7 +1,7 @@
 # Dessert Person v2
 
 Interactive recipe scatterplot
-WIP demo: [https://marguerite.io/dessert-person](https://marguerite.io/dessert-person)
+[https://marguerite.io/dessert-person](https://marguerite.io/dessert-person)
 
 Pull repo, install node dependencies.
 
